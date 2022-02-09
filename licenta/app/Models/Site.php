@@ -51,6 +51,21 @@ class Site extends Model
         return count($matches[2]) > 0 ? $matches[2][0] : $this->url;
     }
 
+    public function isUp(): bool
+    {
+        return preg_match("/2\d{2}/", $this->status);
+    }
+
+    public function isDown(): bool
+    {
+        return !$this->isUp();
+    }
+
+    public function isPending()
+    {
+      return $this->status === "pending";
+    }
+
     public function getSslCertificateStatus()
     {
         if (!$this->hasSslCertificate()) {
@@ -69,4 +84,36 @@ class Site extends Model
     {
         return $this->hasOne(SslCertificate::class, "site_id");
     }
+
+    public function stats()
+    {
+      return $this->hasMany(SiteStats::class, "site_id")->latest();
+    }
+
+    public function isSecured()
+    {
+        return strtolower($this->schema) === "https";
+    }
+    
+    public function getHostAttribute()
+    {
+      $parsedUrl = parse_url($this->url);
+      return $parsedUrl["host"];
+    }
+    
+    public function getSchemaAttribute()
+    {
+        $parsedUrl = parse_url($this->url);
+        return $parsedUrl["scheme"];
+    }
+
+    public function getNameAttribute($value)
+    {
+        if (empty($value)) {
+            return $this->url;
+        }
+
+        return $value;
+    }
+
 }

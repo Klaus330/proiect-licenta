@@ -15,7 +15,7 @@ class CreateSslCertificatesTable extends Migration
     {
         Schema::create('ssl_certificates', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(\App\Models\Site::class, 'site_id');
+            $table->foreignIdFor(\App\Models\Site::class, 'site_id')->constrained()->onDelete('cascade');
             $table->text('extensions');
             $table->text('purposes');
             $table->string('signatureTypeSN');

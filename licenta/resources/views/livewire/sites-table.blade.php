@@ -27,7 +27,7 @@
                         <!-- Odd row -->
                         <tr class="bg-white">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-400">
-                                <a href="/uptime/{{$site->id}}">{{$site->name ?? $site->url}}</a>
+                                <a href="{{ route('sites.show', ['site' => $site->id]) }}">{{$site->name ?? $site->url}}</a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">

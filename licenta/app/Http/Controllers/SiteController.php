@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Site;
 
 class SiteController extends Controller
 {
@@ -11,9 +12,9 @@ class SiteController extends Controller
         return view('sites.index');
     }
 
-    public function show()
+    public function show(Site $site)
     {
-        
+        return view("sites.show", compact("site"));
     }
     
     public function store()
@@ -31,9 +32,21 @@ class SiteController extends Controller
         
     }
 
-    public function destroy()
+
+    public function delete(Site $site)
     {
-        
+        return view('sites.destroy', compact('site'));
+    }
+
+    public function destroy(Site $site)
+    {
+        if (auth()->user()->id !== $site->owner()->first()->id) {
+            return back()->withErrors(["You are not allowed to modify this site"]);
+        }
+    
+        $site->delete();
+    
+        return redirect()->route('sites.index')->with("success", "The site has been deleted");
     }
     
 }
