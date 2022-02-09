@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    @livewireStyles
     @yield('basic_head')
 </head>
 <body  class="bg-gray-200">
@@ -27,6 +28,7 @@
         @yield('basic_content')
         
         @yield('basic_scripts')
+        @livewireScripts
     </div>
 </body>
 </html>

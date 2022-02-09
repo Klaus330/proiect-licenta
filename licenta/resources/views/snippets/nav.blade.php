@@ -59,7 +59,7 @@
                         <a href="/teams" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">
                             Team
                         </a>
-                        <a href="/user/settings" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">
+                        <a href="/user/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">
                             Your Profile
                         </a>
                         <a href="#" x-data @click.prevent="axios.post('{{route('logout')}}').then(() => location.reload())" class="block px-4 py-2 text-sm text-gray-700 cursor-pointer" role="menuitem" tabindex="-1" id="user-menu-item-3">

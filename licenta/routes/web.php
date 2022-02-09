@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\SiteController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -17,9 +18,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/sites', function () {
-    return view('sites.index');
-})->middleware('auth')->name('sites.index');
+
+Route::resource('sites', SiteController::class)->middleware('auth');
+
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
