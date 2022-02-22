@@ -1,8 +1,8 @@
-<div class="w-full p-5 bg-white my-5 rounded">
+<div class="w-full p-5 bg-white my-5 rounded flex justify-between overflow-auto gap-4">
     <nav>
         <ul class="flex gap-4 justify-start items-center">
             <li class="text-gray-500 hover:border-gray-300 border-transparent border-b-2 {{ Request::is("sites/*") ? 'text-purple-500 border-purple-300' : '' }}">
-                <a href="{{ route('sites.index') }}">
+                <a href="{{ route('sites.show', ['site' => $site->id]) }}">
                     Uptime
                 </a>
             </li>
@@ -11,8 +11,8 @@
                     Overview
                 </a>
             </li>
-            <li class="text-gray-500  hover:border-gray-300  border-transparent border-b-2">
-                <a href="">
+            <li class="text-gray-500  hover:border-gray-300  border-transparent border-b-2 {{ Request::is("site/*/schedulers*") ? 'text-purple-500 border-purple-300' : '' }}">
+                <a href="{{ route('schedulers.index', ['site' => $site->id]) }}">
                     Schedulers
                 </a>
             </li>
@@ -23,4 +23,7 @@
             </li>
         </ul>
     </nav>
+    <div class="hidden sm:block">
+        <a href="{{ $site->url }}" target="_blank">{{ $site->name }}</a>
+    </div>
 </div>

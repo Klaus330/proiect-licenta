@@ -7,6 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Site extends Model
 {
+
+    protected const SECURE_HTTP = "https";
+    protected const PENDING_STATE = 'pending';
+    
     use HasFactory;
     
     public $fillable = [
@@ -63,7 +67,7 @@ class Site extends Model
 
     public function isPending()
     {
-      return $this->status === "pending";
+      return $this->status === self::PENDING_STATE;
     }
 
     public function getSslCertificateStatus()
@@ -92,7 +96,7 @@ class Site extends Model
 
     public function isSecured()
     {
-        return strtolower($this->schema) === "https";
+        return strtolower($this->schema) === self::SECURE_HTTP;
     }
     
     public function getHostAttribute()
@@ -116,4 +120,13 @@ class Site extends Model
         return $value;
     }
 
+    public function owner()
+    {
+      return $this->belongsTo(User::class, "user_id");
+    }  
+
+    public function isOwner($user)
+    {
+      return $this->owner->id === $user->id;
+    }  
 }

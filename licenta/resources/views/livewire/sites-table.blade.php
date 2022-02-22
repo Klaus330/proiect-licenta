@@ -25,7 +25,7 @@
                     
                     @forelse($sites as $site)
                         <!-- Odd row -->
-                        <tr class="bg-white">
+                        <tr class="bg-white" wire:key="{{ $site->id }}">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-400">
                                 <a href="{{ route('sites.show', ['site' => $site->id]) }}">{{$site->name ?? $site->url}}</a>
                             </td>

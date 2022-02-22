@@ -26,7 +26,9 @@ class AddNewSiteForm extends Component
 
         try {
             $site = $siteRepository->createOrFail($data);
-
+            // Dispatch Site created event
+            $this->emit('siteCreated');
+            
             // Check the ssl certificate
             Artisan::queue("ssl:check", ["site" => $site->id]);
 
@@ -34,7 +36,6 @@ class AddNewSiteForm extends Component
             // $when = now()->addMinutes(15);
             // auth()->user()->notify((new UptimeMonitorRegistered())->delay($when));
 
-            // Dispatch Site created event
         } catch (SiteDuplication $e) {
             $this->addError('url', $e->getMessage());
         } finally {

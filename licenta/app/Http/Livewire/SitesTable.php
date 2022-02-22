@@ -10,6 +10,10 @@ class SitesTable extends Component
 {
     use WithPagination;
 
+    protected $listeners = [
+        'siteCreated' => 'render'
+    ];
+
     public function render()
     {
         return view('livewire.sites-table', [

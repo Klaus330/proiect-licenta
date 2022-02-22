@@ -37,9 +37,9 @@ class StatusBubble extends Component
     public function getBackgroundProperty()
     {
         return match($this->type()){
-            'success' => 'bg-green',
-            'pending' => 'bg-blue',
-            'failed' => 'bg-red-600'
+            'success' => 'text-green-400',
+            'pending' => 'text-blue-400',
+            'failed' => 'text-red-400'
         };
     }
 
