@@ -13,6 +13,8 @@ use Illuminate\Console\Scheduling\Schedule;
 
 class TriggerScheduler extends Command
 {
+    protected const ERROR_CODE = '500';
+
     /**
      * The name and signature of the console command.
      *
@@ -71,6 +73,7 @@ class TriggerScheduler extends Command
         $start = microtime(true);
 
         try {
+
             [$response, $statsAttributes] = $this->makeTheRequest($scheduler, $url, $startedAt, $start);
 
             $attributes = array_merge(
@@ -95,31 +98,32 @@ class TriggerScheduler extends Command
             if ($e instanceof RequestException) {
                 $response = $e->getResponse();
                 
-                $lastStatusCode = $scheduler->status;
-                $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
-
-                $scheduler->update([
-                    'status' => $response->getStatusCode(),
-                    'next_run' => $this->nextRunDate
-                ]);
-
+                $lastStatusCode = $scheduler->latestStats()->status_code;
+                $endedAt = new \DateTime();
+                $end = microtime(true);
                 SchedulerStats::create([
                     'executed_at' => $this->executed_at,
                     'headers' => json_encode($response->getHeaders()),
                     'scheduler_id' => $scheduler->id,
                     'response_body' => $response->getBody(),
-                    'status_code' => $response->getStatusCode()
+                    'status_code' => $response->getStatusCode(),
+                    'started_at' => $startedAt,
+                    'ended_at' => $endedAt,
+                    'duration' => floatval($end - $start)
                 ]);
 
+                $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
+                $scheduler->update(['next_run' => $this->nextRunDate]);
+
                 if ($this->isErrorStatusCode($lastStatusCode)) {
-                    // $scheduler
-                    //     ->owner()
-                    //     ->notify(
-                    //         new \App\Notifications\SchedulerFailed(
-                    //             $scheduler,
-                    //             $response
-                    //         )
-                    //     );
+                    $scheduler
+                        ->owner()
+                        ->notify(
+                            new \App\Notifications\SchedulerFailed(
+                                $scheduler,
+                                $response
+                            )
+                        );
                 }
             }
             return Command::FAILURE;
@@ -153,7 +157,8 @@ class TriggerScheduler extends Command
                     'duration' => floatval($duration)
                 ];
             },
-            'allow_redirects' => true
+            'allow_redirects' => true,
+            'http_errors' => true
         ]);
 
         return [$response, $statsAttributes];

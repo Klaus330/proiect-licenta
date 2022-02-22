@@ -129,4 +129,9 @@ class Site extends Model
     {
       return $this->owner->id === $user->id;
     }  
+
+    public function getUrlAttribute($value)
+    {
+        return trim($value, '/');
+    }
 }

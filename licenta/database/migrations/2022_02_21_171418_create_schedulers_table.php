@@ -17,7 +17,6 @@ class CreateSchedulersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('method');
-            $table->integer("status")->nullable();
             $table->foreignIdFor(\App\Models\Site::class,'site_id');
             $table->string("endpoint");
             $table->string("period")->nullable();

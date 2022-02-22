@@ -27,7 +27,6 @@ class Scheduler extends Model
       "cronExpression",
       "next_run",
       "period",
-      "status",
       'site_id'
     ];
   
@@ -43,7 +42,7 @@ class Scheduler extends Model
   
     public function owner()
     {
-      return $this->host->owner();
+      return $this->host->owner;
     }
   
     public function isActive()
@@ -56,7 +55,7 @@ class Scheduler extends Model
       return $this->status === self::PENDING_STATUS;
     }
   
-    public function latestStats(): Collection
+    public function latestStats()
     {
       return $this->stats()
         ->latest()
@@ -70,7 +69,7 @@ class Scheduler extends Model
   
     public function getStatus()
     {
-      if (empty($this->status)) {
+      if (empty($this->latestStats()->status_code)) {
         return 'pending';
       }
   
@@ -79,7 +78,7 @@ class Scheduler extends Model
 
     public function successful(): bool
     {
-      return preg_match("/2\d{2}/", $this->status);
+      return preg_match("/2\d{2}/", $this->latestStats()->status_code);
     }
   
     public function belongsToSite(Site $site)

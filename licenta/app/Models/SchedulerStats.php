@@ -11,6 +11,13 @@ class SchedulerStats extends Model
 
     protected $guarded = [];
 
+    protected $dates = ['executed_at'];
+
+    public function getHeadersAttribute($value)
+    {
+      return json_decode($value);
+    }
+
     public function getDurationAttribute($value)
     {
       return floor($value * 1000);
