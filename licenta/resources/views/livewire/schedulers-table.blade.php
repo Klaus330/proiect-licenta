@@ -15,6 +15,9 @@
             <th scope="col" class="text-sm text-gray-400 font-medium">
                 Frequency
             </th>
+            <th>
+
+            </th>
         </tr>
         </thead>
         <tbody class="w-full">
@@ -36,14 +39,24 @@
                     <td  class="py-3 whitespace-nowrap text-sm text-gray-500 text-center">
                         {{ \Lorisleiva\CronTranslator\CronTranslator::translate($scheduler->cronExpression) }}
                     </td>
+                    <td>
+                        <div class="flex gap-2 items-center h-full">
+                            <a href="#" class="bg-indigo-600 hover:bg-indigo-700 rounded p-2 text-white text-xs" @click.stop.prevent.prefetch="$wire.emit('updateScheduler', {'scheduler': {{ $scheduler->id }}})" ><i class="fas fa-edit"></i></a>
+                            <form action="#" method="POST" wire:submit.prevent="deleteScheduler({{$scheduler}})">
+                                @csrf
+                                @method("DELETE")
+                                <button class="bg-red-600 hover:bg-red-700 rounded p-2 text-white text-xs" @click.stop="confirm('Are you sure')"><i class="fas fa-trash"></i></button>
+                            </form>
+                        </div>
+                    </td>
                 </tr>
             @empty
                 <tr>
-                   <td colspan="4">No schedulers added.</td>
+                   <td colspan="5">No schedulers added.</td>
                 </tr>
             @endforelse
         </tbody>
     </table>
-
+    
      {{ $schedulers->links() }}
 </div>

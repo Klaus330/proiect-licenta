@@ -95,7 +95,7 @@ class SchedulerController extends Controller
      * @param  \App\Models\Scheduler  $scheduler
      * @return \Illuminate\Http\Response
      */
-    public function edit(Scheduler $scheduler, Site $site)
+    public function edit(Site $site, Scheduler $scheduler)
     {
         return view("scheduler.edit", compact("site", "scheduler"));
     }
