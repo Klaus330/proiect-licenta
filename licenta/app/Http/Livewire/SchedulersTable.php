@@ -9,9 +9,9 @@ class SchedulersTable extends Component
 {
     public $site;
 
-
     public $listeners = [
-        'schedulerCreated' => 'render'
+        'schedulerCreated' => 'render',
+        'deleteScheduler'
     ];
 
     public function render()
@@ -21,5 +21,19 @@ class SchedulersTable extends Component
             ->with("host")
             ->paginate(10)
         ]);
+    }
+
+    public function deleteScheduler($payload)
+    {
+        $scheduler = Scheduler::find($payload['payload']['schedulerId']);
+
+        // Check authentications
+
+
+        $scheduler->delete();
+        session()->flash('success', 'Scheduler deleted.');
+
+
+        return redirect()->route('schedulers.index', ['site' => $this->site->id]);
     }
 }

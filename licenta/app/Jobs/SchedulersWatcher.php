@@ -37,9 +37,9 @@ class SchedulersWatcher implements ShouldQueue
         $nextRun = new \Carbon\Carbon((new CronExpression("* * * * *"))->getNextRunDate(now()));
 
         $schedulers = Scheduler::where("next_run", $nextRun->subMinute())
-          ->orWhere("status", null)
-          ->get();
-        
+                    ->orWhereDoesntHave("stats")
+                    ->get();
+
         foreach ($schedulers as $scheduler) {
           Artisan::queue("scheduler", ["scheduler" => $scheduler->id])->onQueue("schedulers");
         }

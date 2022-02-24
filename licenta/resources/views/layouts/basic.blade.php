@@ -11,7 +11,6 @@
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
-
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
@@ -30,8 +29,10 @@
         
         @yield('basic_content')
         
-        @yield('basic_scripts')
+        
         @livewireScripts
+        @include('snippets.modal')
+        @yield('basic_scripts')
     </div>
 </body>
 </html>

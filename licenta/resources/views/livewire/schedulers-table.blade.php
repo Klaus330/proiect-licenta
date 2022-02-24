@@ -42,10 +42,17 @@
                     <td>
                         <div class="flex gap-2 items-center h-full">
                             <a href="#" class="bg-indigo-600 hover:bg-indigo-700 rounded p-2 text-white text-xs" @click.stop.prevent.prefetch="$wire.emit('updateScheduler', {'scheduler': {{ $scheduler->id }}})" ><i class="fas fa-edit"></i></a>
-                            <form action="#" method="POST" wire:submit.prevent="deleteScheduler({{$scheduler}})">
-                                @csrf
-                                @method("DELETE")
-                                <button class="bg-red-600 hover:bg-red-700 rounded p-2 text-white text-xs" @click.stop="confirm('Are you sure')"><i class="fas fa-trash"></i></button>
+                            <form action="#" method="POST" @submit.prevent="window.dispatchEvent(new CustomEvent('showmodal', {detail: {
+                                    title: 'Are you sure you want to delete this scheduler?',
+                                    body: 'This action is ireversible',
+                                    action: 'deleteScheduler',
+                                    submitText: 'Delete',
+                                    cancelText: 'Cancel',
+                                    options: {schedulerId: {{ $scheduler->id }}}
+                                }}))">
+                                <button class="bg-red-600 hover:bg-red-700 rounded p-2 text-white text-xs" @click.stop>
+                                        <i class="fas fa-trash"></i>
+                                </button>
                             </form>
                         </div>
                     </td>
