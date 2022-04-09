@@ -40,6 +40,13 @@ class SiteController extends Controller
         })->map(function($el){
             return $el->first();
         })->flatten()->take(30);
+
+        $array = [];
+        foreach($latestStats as $stats)
+        {
+            $array[now()->diffInDays($stats->created_at)] = $stats;
+        }
+        $latestStats = $array;
         return view('sites.overview', compact('site', 'latestStats'));
     }
 
