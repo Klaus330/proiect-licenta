@@ -13,7 +13,7 @@
                                 Monitored url
                             </td>
                             <td class="py-4 whitespace-nowrap text-sm text-gray-500">
-                                <a href="{{$site->url}}" target="_blank" class="text-black">{{$site->url}}</a> <span class="text-xs">192.168.0.1</span>
+                                <i class="fa-solid fa-arrow-up-right-from-square"></i> <a href="{{$site->url}}" target="_blank" class="text-black">{{$site->url}}</a>
                             </td>
                         </tr>
                         <tr class="border-b  border-dashed border-gray-200 ">

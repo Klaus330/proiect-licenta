@@ -98,7 +98,7 @@ class TriggerScheduler extends Command
             if ($e instanceof RequestException) {
                 $response = $e->getResponse();
                 
-                $lastStatusCode = $scheduler->latestStats()->status_code;
+                $lastStatusCode = $scheduler->latestStats()->status_code ?? self::ERROR_CODE;
                 $endedAt = new \DateTime();
                 $end = microtime(true);
                 SchedulerStats::create([

@@ -32,6 +32,7 @@ class Site extends Model
 
     public $casts = [
         "payload" => "array",
+        "headers" => "array",
     ];
 
 
@@ -43,6 +44,11 @@ class Site extends Model
         }
 
         return boolval(preg_match("/2\d{2}/", $this->status));
+    }
+
+    public function getHeadersAttribute($value)
+    {
+        return (array) json_decode($value);
     }
 
     public function schedulers()
@@ -160,5 +166,9 @@ class Site extends Model
     {
       return $this->check === $responseBody;
     }
-  
+    
+    public function allowedToSendEmail()
+    {
+      return now()->diffInHours($this->emailed_at) > 1;
+    }
 }

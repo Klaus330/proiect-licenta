@@ -61,7 +61,7 @@ class SettingsController extends Controller
         return redirect()->route("settings.general", ['site' => $site->id]);
     }
 
-    public function updateUptime(Request $request, Site $website)
+    public function updateUptime(Request $request, Site $site)
     {
         $request->validate([
             'verb' => 'required'
@@ -72,7 +72,7 @@ class SettingsController extends Controller
             $payload = array_combine($request->input('field-names'), $request->input('field-values'));
         }
 
-        $response = $website->update([
+        $response = $site->update([
             'verb' => $request->input('verb'),
             'timeout' => $request->input('timeout') ?? 0,
             'check' => $request->input('check'),
@@ -83,8 +83,8 @@ class SettingsController extends Controller
             return back()->withErrors("Something went wrong!");
         }
 
-        session()->flash('success', "Your website uptime data was updated");
-        return redirect(route("settings.uptime", ['site' => $website->id]));
+        session()->flash('success', "Your site uptime data was updated");
+        return redirect(route("settings.uptime", ['site' => $site->id]));
     }
 
     public function updateCertificate(Request $request, Site $site)

@@ -6,15 +6,6 @@
                 <div class="overflow-hidden w-full">
                     <div class="flex w-full flex-col">
                         <div
-                            class="w-full flex border-b border-dashed border-gray-300 flex-col md:flex-row sm:items-center ">
-                                        <span class="mr-20 py-4 whitespace-nowrap text-sm text-gray-900">
-                                             Monitored from
-                                        </span>
-                            <span class="mr-20 py-4 whitespace-nowrap text-sm text-black">
-                                            Frankfurt, Germany <span class="text-xs">192.168.0.1</span>
-                                        </span>
-                        </div>
-                        <div
                             class="w-full flex flex-col md:flex-row sm:items-center border-b border-dashed border-gray-300 py-2">
                                         <span class="mr-20 py-4 whitespace-nowrap text-sm text-gray-900 py-2">
                                             HTTP status code

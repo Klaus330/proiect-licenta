@@ -4,12 +4,17 @@
         <div class="flex justify-between h-16">
             <div class="flex">
                 <div class="flex-shrink-0 flex items-center">
-                    <h1 class="font-bold"><a href="/" class="cursor-pointer">Oopsee</a></h1>
+                    <h1 class="font-bold"><a href="/" class="cursor-pointer">Whoops</a></h1>
                 </div>
             </div>
 
             <div class="hidden sm:ml-6 sm:flex sm:space-x-8" v-if="!auth">
                 <!-- Current: "border-indigo-500 text-gray-900", Default: "border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700" //border-b-2 -->
+                @auth
+                    <a href="/sites" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                        Sites
+                    </a>
+                @endauth
                 <a href="/docs" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
                     Docs
                 </a>
@@ -53,9 +58,6 @@
                         @click.away="showMenu = false"
                         >
                         <!-- Active: "bg-gray-100", Not Active: "" -->
-                        <a href="/sites" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-0">
-                            Sites
-                        </a>
                         <a href="/teams" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">
                             Team
                         </a>

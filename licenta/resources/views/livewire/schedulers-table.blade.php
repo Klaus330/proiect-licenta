@@ -59,7 +59,11 @@
                 </tr>
             @empty
                 <tr>
-                   <td colspan="5">No schedulers added.</td>
+                   <td colspan="5">
+                       <div class="flex items-center justify-center flex-col gap-2 py-6 text-gray-800">
+                        <i class="fas fa-clock text-5xl"></i> No schedulers added.
+                       </div>
+                    </td>
                 </tr>
             @endforelse
         </tbody>

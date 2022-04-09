@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SiteController;
+use App\Repositories\SiteStatsRepository;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
+    App\Jobs\UptimeMonitor::dispatch(App\Models\Site::find(7), resolve(SiteStatsRepository::class));
     return view('welcome');
 });
 
