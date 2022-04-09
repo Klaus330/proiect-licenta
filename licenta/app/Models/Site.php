@@ -36,13 +36,23 @@ class Site extends Model
 
 
     public function getStatus()
-    {
-        return null;
+    {   
+        if($this->status === self::PENDING_STATE)
+        {
+            return self::PENDING_STATE;
+        }
+
+        return boolval(preg_match("/2\d{2}/", $this->status));
     }
 
-    public function hasCronMonitors()
+    public function schedulers()
     {
-        return false;
+        return $this->hasMany(Scheduler::class);
+    }
+
+    public function hasSchedulers()
+    {
+        return $this->schedulers()->count() > 0;
     }
 
     public function getHost()

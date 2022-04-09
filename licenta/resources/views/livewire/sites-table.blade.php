@@ -14,10 +14,10 @@
                         Ssl
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Content
+                        Schedulers
                     </th>
                     <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Cron
+                        Content
                     </th>
                 </tr>
                 </thead>
@@ -47,18 +47,18 @@
                                     ])
                                 </div>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center">
-                                {{-- <status status="{{ $site->status }}" success-message="{{ucfirst($site->status)}}"></status> --}}
-                                {{-- @livewire('status-bubble', ['status' => $site->status]) --}}
-                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
                                     @livewire('status-bubble', [
-                                        'status' => $site->hasCronMonitors(),
+                                        'status' => $site->hasSchedulers(),
                                         'success' => ['message' => 'Monitoring'],
-                                        'failed' => ['message' => 'Not Present']
+                                        'failed' => ['message' => 'Not Registered']
                                     ])
                                 </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center">
+                                {{-- <status status="{{ $site->status }}" success-message="{{ucfirst($site->status)}}"></status> --}}
+                                {{-- @livewire('status-bubble', ['status' => $site->status]) --}}
                             </td>
                         </tr>
                     @empty
