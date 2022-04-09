@@ -11,7 +11,7 @@ class SiteStats extends Model
 
     
   protected $fillable = [
-    "id_website",
+    "site_id",
     "dns_lookup",
     "total_time",
     "connect_time",
@@ -69,5 +69,10 @@ class SiteStats extends Model
       $duration = $this->duration / 1000;
       return "{$duration} sec";
     }
+  }
+
+  public function successful()
+  {
+    return preg_match("/2\d{2}/", $this->http_code);
   }
 }

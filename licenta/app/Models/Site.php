@@ -7,12 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Site extends Model
 {
-
-    protected const SECURE_HTTP = "https";
-    protected const PENDING_STATE = 'pending';
-    
     use HasFactory;
     
+    protected const SECURE_HTTP = "https";
+    protected const PENDING_STATE = 'pending';
+    protected const VERB_GET = 'GET';
+    protected const VERB_POST = 'POST';
+
     public $fillable = [
         "url",
         "user_id",
@@ -134,4 +135,20 @@ class Site extends Model
     {
         return trim($value, '/');
     }
+
+    public function acceptsGet()
+    {
+        return $this->method === self::VERB_GET;
+    }
+
+    public function hasCheckString()
+    {
+      return !empty($this->check);
+    }
+
+    public function validateResponse($responseBody)
+    {
+      return $this->check === $responseBody;
+    }
+  
 }

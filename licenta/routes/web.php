@@ -22,8 +22,11 @@ include 'scheduler-routes.php';
 include 'settings-routes.php';
 
 Route::get('site/{site}/delete', [SiteController::class, 'delete'])->name('sites.delete');
+Route::get('site/{site}/overview', [SiteController::class, 'overview'])->name('sites.overview');
 Route::resource('sites', SiteController::class)->middleware('auth');
-
+Route::get('uptime/{site}', function(){
+    return;
+})->name('uptime.index');
 
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');

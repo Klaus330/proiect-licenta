@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Site;
+use Illuminate\Support\Facades\DB;
 
 class SiteController extends Controller
 {
@@ -32,6 +33,15 @@ class SiteController extends Controller
         
     }
 
+    public function overview(Site $site)
+    {
+        $latestStats = $site->stats->groupBy(function($item) {
+            return $item->created_at->format('d');
+        })->map(function($el){
+            return $el->first();
+        })->flatten()->take(30);
+        return view('sites.overview', compact('site', 'latestStats'));
+    }
 
     public function delete(Site $site)
     {

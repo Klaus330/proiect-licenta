@@ -10,7 +10,7 @@
         hasCancel = $event.detail.hasOwnProperty('cancelText');
         showModal = true;
     "
-    class="h-screen w-screen absolute top-0 left-0 bg-gray-800/50">
+    class="h-screen w-screen absolute top-0 left-0 bg-gray-800/50" style="display: none;">
     <div class="w-2/5 mx-auto mt-10 bg-white rounded p-3">
         <div class="header border-b border-gray-300 flex justify-between items-center pb-2">
             <h4 x-text="title">Header</h4>
