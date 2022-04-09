@@ -7,6 +7,7 @@ use App\Notifications\ChangeInPerformance;
 use App\Notifications\MalformedUptimeResponse;
 use App\Notifications\SiteDown;
 use App\Notifications\SiteRecovered;
+use App\Notifications\WebsiteIsSlow;
 use App\Repositories\SiteStatsRepository;
 use Cron\CronExpression;
 use GuzzleHttp\Client;
@@ -24,6 +25,9 @@ use Psr\Http\Message\ResponseInterface;
 class UptimeMonitor implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+
+    protected const MODIFIED_PERFORMANCE_LIMIT = 200;
+    protected const LOW_PERFORMANCE_LIMIT = 1200;
 
     public $tries = 3;
     public $backoff = 1;
@@ -54,15 +58,15 @@ class UptimeMonitor implements ShouldQueue
     {
         $startedAt = new \DateTime();
         $start = microtime(true);
-
+        
         $client = new Client();
         $response = $client->request($this->site->verb, $this->site->url, [
-            RequestOptions::HEADERS => $this->site->headers ?? [],
+            RequestOptions::HEADERS => (array) $this->site->headers ?? [],
             RequestOptions::FORM_PARAMS => $this->site->acceptsGet() ? [] : $this->site->payload,
             RequestOptions::ON_STATS => function (TransferStats $stats) use ($startedAt, $start) {
                 $response = $stats->getResponse();
                 $request = $stats->getRequest();
-
+                
                 $endedAt = new \DateTime();
                 $end = microtime(true);
                 $duration = $end - $start;
@@ -124,12 +128,12 @@ class UptimeMonitor implements ShouldQueue
           "next_run" => $next_run,
         ]);
   
-        if (empty($this->site->emailed_at) || $this->site->canSendEmail()) {
+        if (empty($this->site->emailed_at) || $this->site->allowedToSendEmail()) {
           $this->site->update(["emailed_at" => now()->toDateTime()]);
           $this->sendNotification(new SiteDown($this->site));
         }
       }
-  
+      
       dd($e);
     }
 
@@ -137,7 +141,7 @@ class UptimeMonitor implements ShouldQueue
     {
         return $this->site->hasCheckString() &&
         !$this->site->validateResponse($response->getBody()) &&
-        $this->site->canSendEmail();
+        $this->site->allowedToSendEmail();
     }
 
     protected function sendNotification($notification)
@@ -148,9 +152,10 @@ class UptimeMonitor implements ShouldQueue
     private function verifyHeadersOnResponse(ResponseInterface $response)
     {
         if (empty($this->site->headers)) {
-            return true;
+            return false;
         }
-
+        dd($this->site->headers);
+        dd($response->getHeaders());
         dd(array_diff($this->site->headers, $response->getHeaders()));
     }
 
@@ -175,14 +180,29 @@ class UptimeMonitor implements ShouldQueue
 
         $current = $latestStats[0];
         $previous = $latestStats[1];
-        return $current->duration - $previous->duration > 200;
+        return $current->duration - $previous->duration > self::MODIFIED_PERFORMANCE_LIMIT;
+    }
+
+    protected function isSiteTooSlow()
+    {
+        $latestStats = $this->site->stats->last();
+        return $latestStats->duration > self::LOW_PERFORMANCE_LIMIT;
     }
 
     protected function performChecks($response)
     {
-        if ($this->verifyTextOnResponse($response) && $this->verifyHeadersOnResponse($response)) {
+        // dd($response);
+        if ($this->verifyTextOnResponse($response)) {
             $this->site->update(["emailed_at" => now()->toDateTime()]);
             $this->sendNotification(new MalformedUptimeResponse($this->site, $response->getBody()));
+            return;
+        }
+        
+        if($this->verifyHeadersOnResponse($response)){
+            info('Headers failed');
+            dd('hit');
+            // $this->site->update(["emailed_at" => now()->toDateTime()]);
+            // $this->sendNotification(new MalformedUptimeResponse($this->site, $response->getBody()));
             return;
         }
     
@@ -195,6 +215,13 @@ class UptimeMonitor implements ShouldQueue
         if ($this->isChangeInPerformance()) {
             $when = now()->addMinute();
             $this->sendNotification((new ChangeInPerformance($this->site))->delay($when));
+            return;
+        }
+
+        if($this->isSiteTooSlow())
+        {
+            $when = now()->addMinute();
+            $this->sendNotification((new WebsiteIsSlow($this->site))->delay($when));
             return;
         }
     }
