@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Models\Site;
+use App\Models\SiteStats;
 use App\Repositories\SiteStatsRepository;
 use Cron\CronExpression;
 use Illuminate\Bus\Queueable;
@@ -37,10 +38,11 @@ class UptimeMonitorWatcher implements ShouldQueue
         $nextRun = new \Carbon\Carbon((new CronExpression("* * * * *"))->getNextRunDate(now()));
 
         $sites = Site::where('next_run', $nextRun->subMinute())
+                    ->orWhere->lastStatsOverdue()
                     ->orWhere('status', 'pending')
                     ->get()
                     ->each(function($site){
                         UptimeMonitor::dispatch($site, $this->siteStatsRepository)->onQueue('uptime');
-                    });        
+                    }); 
     }
 }

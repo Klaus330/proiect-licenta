@@ -13,6 +13,7 @@ class Site extends Model
     protected const PENDING_STATE = 'pending';
     protected const VERB_GET = 'GET';
     protected const VERB_POST = 'POST';
+    protected const OVERDUE_LIMIT = '5';
 
     public $fillable = [
         "url",
@@ -170,5 +171,39 @@ class Site extends Model
     public function allowedToSendEmail()
     {
       return now()->diffInHours($this->emailed_at) > 1;
+    }
+
+    public function hasTimeout()
+    {
+        return $this->timeout != 0;
+    }
+
+    public function scopeLastStatsOverdue($query)
+    {
+        $limit = self::OVERDUE_LIMIT;
+        $query->whereRaw("DATE_SUB(next_run, INTERVAL {$limit} MINUTE) > (SELECT ended_at from site_stats where site_id = sites.id order by ended_at limit 1)");
+    }
+
+    public function getLastMonthMonitoringInfo()
+    {
+        $latestStats = $this->stats->groupBy(function($item) {
+            return $item->created_at->format('d');
+        })->map(function($collection){
+            return $collection->first();
+        })->flatten()->take(30);
+
+        $array = [];
+        foreach($latestStats as $stats)
+        {
+            $array[now()->day - $stats->ended_at->day] = $stats;
+        }
+        $latestStats = $array;
+
+        if(! array_key_exists(0, $latestStats))
+        {
+            $latestStats[0] = $latestStats[1];
+        }
+
+        return $latestStats;
     }
 }

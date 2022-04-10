@@ -35,18 +35,8 @@ class SiteController extends Controller
 
     public function overview(Site $site)
     {
-        $latestStats = $site->stats->groupBy(function($item) {
-            return $item->created_at->format('d');
-        })->map(function($el){
-            return $el->first();
-        })->flatten()->take(30);
-
-        $array = [];
-        foreach($latestStats as $stats)
-        {
-            $array[now()->diffInDays($stats->created_at)] = $stats;
-        }
-        $latestStats = $array;
+        $latestStats = $site->getLastMonthMonitoringInfo();
+        
         return view('sites.overview', compact('site', 'latestStats'));
     }
 
