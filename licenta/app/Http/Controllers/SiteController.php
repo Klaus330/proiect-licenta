@@ -36,8 +36,9 @@ class SiteController extends Controller
     public function overview(Site $site)
     {
         $latestStats = $site->getLastMonthMonitoringInfo();
+        $lastIncident = $site->last_incident;
         
-        return view('sites.overview', compact('site', 'latestStats'));
+        return view('sites.overview', compact('site', 'latestStats', 'lastIncident'));
     }
 
     public function delete(Site $site)

@@ -49,6 +49,11 @@ class Site extends Model
 
     public function getHeadersAttribute($value)
     {
+        if($value === null)
+        {
+            return $value;
+        }
+
         return (array) json_decode($value);
     }
 
@@ -199,11 +204,19 @@ class Site extends Model
         }
         $latestStats = $array;
 
-        if(! array_key_exists(0, $latestStats))
+        if(! array_key_exists(0, $latestStats) && array_key_exists(1, $latestStats))
         {
             $latestStats[0] = $latestStats[1];
         }
 
         return $latestStats;
+    }
+
+    public function getLastIncidentAttribute()
+    {
+        return $this->stats()
+                    ->where('http_code', 'not like', '2__')
+                    ->where('http_code', 'not like', '3__')
+                    ->first();
     }
 }

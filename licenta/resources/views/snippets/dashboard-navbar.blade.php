@@ -29,6 +29,6 @@
         </nav>
     </div>
     <div class="hidden sm:block">
-        <a href="{{ $site->url }}" target="_blank">{{ $site->name }}</a>
+        <i class="fa-solid fa-arrow-up-right-from-square"></i>  <a href="{{ $site->url }}" target="_blank">{{ $site->name }}</a>
     </div>
 </div>

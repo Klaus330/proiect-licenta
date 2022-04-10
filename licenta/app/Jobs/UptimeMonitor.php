@@ -2,12 +2,14 @@
 
 namespace App\Jobs;
 
+use App\Exceptions\BadHostProvided;
 use App\Models\Site;
 use App\Notifications\ChangeInPerformance;
 use App\Notifications\MalformedUptimeResponse;
 use App\Notifications\SiteDown;
 use App\Notifications\SiteRecovered;
 use App\Notifications\WebsiteIsSlow;
+use App\Notifications\WrongSiteProvided;
 use App\Repositories\SiteStatsRepository;
 use Cron\CronExpression;
 use GuzzleHttp\Client;
@@ -20,6 +22,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 use Psr\Http\Message\ResponseInterface;
 
 class UptimeMonitor implements ShouldQueue
@@ -28,10 +31,13 @@ class UptimeMonitor implements ShouldQueue
 
     protected const MODIFIED_PERFORMANCE_LIMIT = 200;
     protected const LOW_PERFORMANCE_LIMIT = 1200;
+    protected const BAD_HOST_PROVIDED_CODE_ERROR = 404;
 
     public $tries = 3;
     public $backoff = 1;
     public $maxException = 2;
+    public $failOnTimeout = true;
+    public $timeout = 2;
 
     protected Site $site;
     protected SiteStatsRepository $statsRepo;
@@ -58,7 +64,7 @@ class UptimeMonitor implements ShouldQueue
     {
         $startedAt = new \DateTime();
         $start = microtime(true);
-        
+
         $client = new Client();
         $response = $client->request($this->site->verb, $this->site->url, [
             RequestOptions::HEADERS => (array) $this->site->headers ?? [],
@@ -66,10 +72,19 @@ class UptimeMonitor implements ShouldQueue
             RequestOptions::ON_STATS => function (TransferStats $stats) use ($startedAt, $start) {
                 $response = $stats->getResponse();
                 $request = $stats->getRequest();
-                
+
                 $endedAt = new \DateTime();
                 $end = microtime(true);
                 $duration = $end - $start;
+                
+                if(empty($response))
+                {
+                    throw new BadHostProvided([
+                        'duration' => $duration,
+                        'ended_at' => $endedAt,
+                        'started_at' => $startedAt,
+                    ], 'The host you provided is wrong.');
+                }
 
                 $attributes = [
                     "site_id" => $this->site->id,
@@ -101,6 +116,7 @@ class UptimeMonitor implements ShouldQueue
                     "started_at" => $startedAt,
                     "ended_at" => $endedAt,
                     "duration" => floatval($duration),
+                    'body' => $response->getBody(),
                   ];
 
                 //   Create stats
@@ -132,8 +148,24 @@ class UptimeMonitor implements ShouldQueue
           $this->site->update(["emailed_at" => now()->toDateTime()]);
           $this->sendNotification(new SiteDown($this->site));
         }
+      }else if($e instanceof BadHostProvided)
+      {
+        $attributes = $e->getExceptionData();
+        $attributes['http_code'] = self::BAD_HOST_PROVIDED_CODE_ERROR;
+        dd($this->statsRepo->create($attributes));
+
+        $next_run = $this->schedule->getNextRunDate(now());
+        $this->site->update([
+          "status" => self::BAD_HOST_PROVIDED_CODE_ERROR,
+          "next_run" => $next_run,
+        ]);
+
+        if (empty($this->site->emailed_at) || $this->site->allowedToSendEmail()) {
+            $this->site->update(["emailed_at" => now()->toDateTime()]);
+            $this->sendNotification(new WrongSiteProvided($this->site));
+        }
       }
-      
+
       dd($e);
     }
 
@@ -173,7 +205,7 @@ class UptimeMonitor implements ShouldQueue
     {
         $latestStats = $this->site->stats()->get();
      
-        if($latestStats->count() === 0)
+        if($latestStats->count() < 2)
         {
             return false;
         }
@@ -191,7 +223,6 @@ class UptimeMonitor implements ShouldQueue
 
     protected function performChecks($response)
     {
-        // dd($response);
         if ($this->verifyTextOnResponse($response)) {
             $this->site->update(["emailed_at" => now()->toDateTime()]);
             $this->sendNotification(new MalformedUptimeResponse($this->site, $response->getBody()));
@@ -218,10 +249,12 @@ class UptimeMonitor implements ShouldQueue
             return;
         }
 
-        if($this->isSiteTooSlow())
+        if($this->isSiteTooSlow() && $this->site->allowedToSendEmail())
         {
+            $this->site->update(["emailed_at" => now()->toDateTime()]);
             $when = now()->addMinute();
             $this->sendNotification((new WebsiteIsSlow($this->site))->delay($when));
+
             return;
         }
     }

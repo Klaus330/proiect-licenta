@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\SiteController;
+use App\Models\Site;
 use App\Repositories\SiteStatsRepository;
 use Illuminate\Support\Facades\Route;
 
@@ -16,7 +17,9 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    App\Jobs\UptimeMonitor::dispatch(App\Models\Site::find(7), resolve(SiteStatsRepository::class));
+    App\Jobs\UptimeMonitor::dispatch(App\Models\Site::find(7), resolve(SiteStatsRepository::class))->onQueue('uptime');
+    // dd(Site::find(2)->last_incident);
+    // dd(Site::first()->stats()->where('http_code', '!=', '200')->get());
     return view('welcome');
 });
 

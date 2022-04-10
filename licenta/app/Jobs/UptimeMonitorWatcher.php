@@ -3,7 +3,6 @@
 namespace App\Jobs;
 
 use App\Models\Site;
-use App\Models\SiteStats;
 use App\Repositories\SiteStatsRepository;
 use Cron\CronExpression;
 use Illuminate\Bus\Queueable;
