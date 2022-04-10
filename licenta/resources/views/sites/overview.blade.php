@@ -5,8 +5,9 @@
     <div>
         <h1 class="text-2xl font-semibold">Overview</h1>
     </div>
-    <div>
-        @include('sites.snippets.overview.uptime')        
+    <div class="grid grid-cols-4 gap-3">
+        @include('sites.snippets.overview.uptime')
+        @include('sites.snippets.overview.ssl')
     </div>
 </section>
 @endsection

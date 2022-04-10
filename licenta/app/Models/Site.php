@@ -38,7 +38,7 @@ class Site extends Model
     ];
 
 
-    public function getStatus()
+    public function getStatus() : State
     {   
         if($this->status === self::PENDING_STATE)
         {
@@ -63,7 +63,7 @@ class Site extends Model
         return $this->hasMany(Scheduler::class);
     }
 
-    public function hasSchedulers()
+    public function hasSchedulers() : State
     {
         return $this->schedulers()->count() > 0 ? State::SUCCESS : State::ERROR;
     }
@@ -94,7 +94,7 @@ class Site extends Model
       return $this->status === self::PENDING_STATE;
     }
 
-    public function getSslCertificateStatus()
+    public function getSslCertificateStatus() : State
     {
         if (!$this->hasSslCertificate()) {
             return State::PENDING;
