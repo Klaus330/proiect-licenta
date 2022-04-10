@@ -16,8 +16,12 @@ class StatusBubble extends Component
         'message' => 'Failed'
     ];
     
-    public  $info = [
+    public  $pending = [
         'message' => 'Pending'
+    ];
+
+    public  $info = [
+        'message' => 'Info'
     ];
 
     public function render()
@@ -27,28 +31,21 @@ class StatusBubble extends Component
 
     public function getMessageProperty()
     {
-        return match($this->type()){
+        return match($this->status){
             'success' => $this->success['message'],
             'info' => $this->info['message'],
+            'pending' => $this->pending['message'],
             'error' => $this->error['message']
         };
     }
 
     public function getBackgroundProperty()
     {
-        return match($this->type()){
+        return match($this->status){
             'success' => 'text-green-400',
             'info' => 'text-blue-400',
+            'pending' => 'text-blue-400',
             'error' => 'text-red-400'
-        };
-    }
-
-    public function type()
-    {
-      return match($this->status){
-            true => 'success',
-            false => 'error',
-            default  => 'info'
         };
     }
 }

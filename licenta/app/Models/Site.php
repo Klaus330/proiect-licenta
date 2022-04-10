@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\State;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -41,10 +42,10 @@ class Site extends Model
     {   
         if($this->status === self::PENDING_STATE)
         {
-            return self::PENDING_STATE;
+            return State::PENDING;
         }
 
-        return boolval(preg_match("/2\d{2}/", $this->status));
+        return boolval(preg_match("/2\d{2}/", $this->status)) ? State::SUCCESS : State::ERROR;
     }
 
     public function getHeadersAttribute($value)
@@ -64,7 +65,7 @@ class Site extends Model
 
     public function hasSchedulers()
     {
-        return $this->schedulers()->count() > 0;
+        return $this->schedulers()->count() > 0 ? State::SUCCESS : State::ERROR;
     }
 
     public function getHost()
@@ -96,10 +97,17 @@ class Site extends Model
     public function getSslCertificateStatus()
     {
         if (!$this->hasSslCertificate()) {
-            return null;
+            return State::PENDING;
         }
 
-        return $this->sslCertificate->validTo->gt(now());
+        $ssl = $this->sslCertificate;
+
+        if($ssl->validTo->lt(now()->addDays($ssl->expires)))
+        {
+            return State::INFO;
+        }
+
+        return $this->sslCertificate->validTo->gt(now()) ? State::SUCCESS : State::ERROR;
     }
 
     public function hasSslCertificate()

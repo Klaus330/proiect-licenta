@@ -89,6 +89,6 @@ class SettingsController extends Controller
 
     public function updateSslCertificate(Request $request, Site $site)
     {
-
+        
     }
 }

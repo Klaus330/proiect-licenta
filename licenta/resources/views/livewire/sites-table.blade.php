@@ -32,7 +32,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
                                     @livewire('status-bubble', [
-                                        'status' => $site->getStatus(),
+                                        'status' => $site->getStatus()->label(),
                                         'success' => ['message' => 'Up'],
                                         'error' => ['message' => 'Down']
                                     ])
@@ -41,7 +41,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
                                     @livewire('status-bubble', [
-                                        'status' => $site->getSslCertificateStatus(),
+                                        'status' => $site->getSslCertificateStatus()->label(),
                                         'success' => ['message' => 'Valid'],
                                         'error' => ['message' => 'Expired'],
                                         'info' => ['message' => 'About expire']
@@ -51,7 +51,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
                                     @livewire('status-bubble', [
-                                        'status' => $site->hasSchedulers(),
+                                        'status' => $site->hasSchedulers()->label(),
                                         'success' => ['message' => 'Monitoring'],
                                         'error' => ['message' => 'Not Registered']
                                     ])

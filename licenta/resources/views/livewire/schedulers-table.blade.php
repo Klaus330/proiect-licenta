@@ -30,7 +30,7 @@
                         <a href="{{ route('schedulers.show', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}" class="hover:underline">{{ $scheduler->name }}</a>
                     </td>
                     <td class="py-3 whitespace-nowrap text-sm text-gray-500 text-center">
-                        @livewire('status-bubble', ['status' => $scheduler->getStatus()])
+                        @livewire('status-bubble', ['status' => $scheduler->getStatus()->label()])
                     </td>
                     <td class="py-3 whitespace-nowrap text-sm text-gray-500 text-center flex flex-col break-words">
                         <span>{{( new \Carbon\Carbon($cronExpression ->getPreviousRunDate()->getTimestamp()))->diffForHumans() }}</span>

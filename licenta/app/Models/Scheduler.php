@@ -70,10 +70,10 @@ class Scheduler extends Model
     public function getStatus()
     {
       if (empty($this->latestStats()->status_code)) {
-        return 'pending';
+        return State::PENDING;
       }
   
-      return $this->successful();
+      return $this->successful() ? State::SUCCESS : State::ERROR;
     }
 
     public function successful(): bool
