@@ -102,12 +102,12 @@ class Site extends Model
 
         $ssl = $this->sslCertificate;
 
-        if($ssl->validTo->lt(now()->addDays($ssl->expires)))
+        if($ssl->validTo->lt(now()))
         {
-            return State::INFO;
+            return State::ERROR;
         }
 
-        return $this->sslCertificate->validTo->gt(now()) ? State::SUCCESS : State::ERROR;
+        return $this->sslCertificate->validTo->lt(now()->addDays($ssl->expires)) ? State::INFO : State::SUCCESS;
     }
 
     public function hasSslCertificate()

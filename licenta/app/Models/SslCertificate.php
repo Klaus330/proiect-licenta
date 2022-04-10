@@ -26,6 +26,7 @@ class SslCertificate extends Model
       "validTo",
       "validFrom",
       "signatureTypeNID",
+      'expires'
     ];
     
     protected $dates = ['validTo', 'validFrom'];

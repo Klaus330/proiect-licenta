@@ -89,6 +89,11 @@ class SettingsController extends Controller
 
     public function updateSslCertificate(Request $request, Site $site)
     {
-        
+        $request->validate(['expires_treshold' => 'required|integer']);
+
+        $site->sslCertificate->update(['expires' => $request->input("expires_treshold")]);
+
+        session()->flash('success', "Your site ssl expire alert was updated");
+        return redirect(route("settings.ssl-certificate", ['site' => $site->id]));
     }
 }
