@@ -2,6 +2,9 @@
 
 namespace App\Console;
 
+use App\Jobs\SchedulersWatcher;
+use App\Jobs\SslCertificateWatcher;
+use App\Jobs\UptimeMonitorWatcher;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -15,7 +18,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->job(SchedulersWatcher::class)->everyMinute();
+        $schedule->job(UptimeMonitorWatcher::class)->everyMinute();
+        $schedule->job(SslCertificateWatcher::class)->everyDay();
     }
 
     /**
