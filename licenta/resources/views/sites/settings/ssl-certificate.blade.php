@@ -8,7 +8,7 @@
             <form action="{{route('update.certificate.settings', ['site' => $site->id])}}" method="POST"
                 class="relative space-y-8 bg-white rounded-lg w-75 pb-5 sm:mb-5 lg:mb-0">
                 @csrf
-                @method("PUT")
+                @method("PATCH")
                 <div class="w-full my-5 ">
                     <div class="w-full flex items-start my-5 grid grid-cols-1  md:grid-cols-5">
                         <label class="w-full p-1 col-label-1" for="timeout">Expires soon threshold in days</label>

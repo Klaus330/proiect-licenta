@@ -12,11 +12,11 @@ class StatusBubble extends Component
         'message' => 'Success'
     ];
     
-    public  $failed = [
+    public  $error = [
         'message' => 'Failed'
     ];
     
-    public  $pending = [
+    public  $info = [
         'message' => 'Pending'
     ];
 
@@ -29,8 +29,8 @@ class StatusBubble extends Component
     {
         return match($this->type()){
             'success' => $this->success['message'],
-            'pending' => $this->pending['message'],
-            'failed' => $this->failed['message']
+            'info' => $this->info['message'],
+            'error' => $this->error['message']
         };
     }
 
@@ -38,8 +38,8 @@ class StatusBubble extends Component
     {
         return match($this->type()){
             'success' => 'text-green-400',
-            'pending' => 'text-blue-400',
-            'failed' => 'text-red-400'
+            'info' => 'text-blue-400',
+            'error' => 'text-red-400'
         };
     }
 
@@ -47,8 +47,8 @@ class StatusBubble extends Component
     {
       return match($this->status){
             true => 'success',
-            false => 'failed',
-            default  => 'pending'
+            false => 'error',
+            default  => 'info'
         };
     }
 }

@@ -34,7 +34,7 @@
                                     @livewire('status-bubble', [
                                         'status' => $site->getStatus(),
                                         'success' => ['message' => 'Up'],
-                                        'failed' => ['message' => 'Down']
+                                        'error' => ['message' => 'Down']
                                     ])
                                 </div>
                             </td>
@@ -43,7 +43,8 @@
                                     @livewire('status-bubble', [
                                         'status' => $site->getSslCertificateStatus(),
                                         'success' => ['message' => 'Valid'],
-                                        'failed' => ['message' => 'Expired']
+                                        'error' => ['message' => 'Expired'],
+                                        'info' => ['message' => 'About expire']
                                     ])
                                 </div>
                             </td>
@@ -52,7 +53,7 @@
                                     @livewire('status-bubble', [
                                         'status' => $site->hasSchedulers(),
                                         'success' => ['message' => 'Monitoring'],
-                                        'failed' => ['message' => 'Not Registered']
+                                        'error' => ['message' => 'Not Registered']
                                     ])
                                 </div>
                             </td>

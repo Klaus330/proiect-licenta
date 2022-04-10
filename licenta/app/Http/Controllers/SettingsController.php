@@ -87,7 +87,7 @@ class SettingsController extends Controller
         return redirect(route("settings.uptime", ['site' => $site->id]));
     }
 
-    public function updateCertificate(Request $request, Site $site)
+    public function updateSslCertificate(Request $request, Site $site)
     {
 
     }
