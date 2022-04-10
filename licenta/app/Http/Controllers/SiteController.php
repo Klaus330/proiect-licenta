@@ -15,7 +15,8 @@ class SiteController extends Controller
 
     public function show(Site $site)
     {
-        return view("sites.show", compact("site"));
+        $lastIncidents = $site->last_incidents;
+        return view("sites.show", compact("site", "lastIncidents"));
     }
     
     public function store()

@@ -32,6 +32,7 @@ $stats = $site->stats->last();
                     @include('sites.snippets.site.general')
                     @include('sites.snippets.site.results')
                     @include('sites.snippets.site.details')
+                    @include('sites.snippets.site.incidents')
                 </div>
             @else
                 <div class="flex flex-col items-center justify-center h-full mt-5">

@@ -212,11 +212,21 @@ class Site extends Model
         return $latestStats;
     }
 
-    public function getLastIncidentAttribute()
+    public function getLastIncidentsAttribute()
     {
         return $this->stats()
                     ->where('http_code', 'not like', '2__')
                     ->where('http_code', 'not like', '3__')
-                    ->first();
+                    ->get();
+    }
+
+    public function getLastIncidentAttribute()
+    {
+        if($this->last_incidents->isEmpty())
+        {
+            return null;
+        }
+
+        return $this->last_incidents[0];
     }
 }
