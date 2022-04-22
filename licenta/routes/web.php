@@ -28,6 +28,7 @@ Route::get('/', function () {
 include 'scheduler-routes.php';
 include 'settings-routes.php';
 
+Route::get('/site/{site}/download-broken-links', [SiteController::class, 'downloadBrokenLinks'])->name('site.download-broken-links');
 Route::get('site/{site}/delete', [SiteController::class, 'delete'])->name('sites.delete');
 Route::get('site/{site}/overview', [SiteController::class, 'overview'])->name('sites.overview');
 Route::get('/site/{site}/broken-links', [SiteController::class, 'brokenLinks'])->name('sites.broken-links');

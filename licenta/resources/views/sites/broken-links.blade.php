@@ -7,9 +7,9 @@
             <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-gray-50">
                 <tr class="divide-x divide-gray-200">
-                    <th scope="col" class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">Code</th>
-                    <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Link</th>
-                    <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Found on</th>
+                    <th scope="col" class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">STATUS CODE</th>
+                    <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">INTERNAL BROKEN LINKS</th>
+                    <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">FOUND ON</th>
                 </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200 bg-white">
@@ -26,6 +26,10 @@
                     @endforelse
                 </tbody>
             </table>
+
+            <p class="py-2">
+                Download broken links report: <a href="{{ route('site.download-broken-links', ['site' => $site]) }}" class="text-white bg-purple-600 py-1.5 px-2 text-xs rounded text-center hover:bg-purple-800"><i class="fas fa-download"></i> Download .csv</a>
+             </p>
         </section>
     @else
         <section class="p-3 bg-white rounded">
@@ -34,13 +38,16 @@
     @endif
 
     <section class="p-5 bg-white rounded">  
-        <p class="font-bold">We checked {{count($routes)}} urls</p>         
+        <div class="py-2">
+            <p class="font-bold">We checked {{count($routes)}} urls</p> 
+            <p>This table contains all urls that we crawled.</p>        
+        </div>
         <table class="min-w-full divide-y divide-gray-300">
             <thead class="bg-gray-50">
               <tr class="divide-x divide-gray-200">
-                <th scope="col" class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">Code</th>
-                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Link</th>
-                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">Found on</th>
+                <th scope="col" class="py-3.5 pl-4 pr-4 text-left text-sm font-semibold text-gray-900 sm:pl-6">STATUS CODE</th>
+                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">INTERNAL LINKS</th>
+                <th scope="col" class="px-4 py-3.5 text-left text-sm font-semibold text-gray-900">FOUND ON</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200 bg-white">

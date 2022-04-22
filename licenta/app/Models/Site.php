@@ -268,4 +268,9 @@ class Site extends Model
     {
         return $this->broken_links->isEmpty() ? State::SUCCESS : State::ERROR;
     }
+
+    public function getDirReportsAttribute()
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . '/reports/' . $this->id . '/';
+    }
 }

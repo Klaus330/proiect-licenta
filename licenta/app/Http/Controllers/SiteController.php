@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Site;
 use Illuminate\Support\Facades\DB;
+use League\Csv\Writer;
+use File;
 
 class SiteController extends Controller
 {
@@ -62,6 +64,22 @@ class SiteController extends Controller
     {
         $routes = $site->routes()->where('http_code', 'like', '2__')->get();
         $brokenLinks = $site->broken_links;
+
+        if(count($brokenLinks) > 0){
+            File::put($site->dir_reports.'broken_links.csv', '');
+            $csv = Writer::createFromPath($site->dir_reports.'broken_links.csv', 'w+');
+            $csv->insertOne(['Status', 'URL', 'Found on']);
+            
+            foreach ($brokenLinks as $brokenLink) {
+                $csv->insertOne([$brokenLink->http_code, $brokenLink->route, $site->url]);
+            }
+        }
+
         return view('sites.broken-links', compact('site', 'brokenLinks', 'routes'));
+    }
+
+    public function downloadBrokenLinks(Site $site)
+    {
+        return response()->download($site->dir_reports.'broken_links.csv', 'broken_links_'.date('Ymdhis').'.csv');
     }
 }
