@@ -17,7 +17,7 @@ class CreateSchedulersTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('method');
-            $table->foreignIdFor(\App\Models\Site::class,'site_id');
+            $table->foreignIdFor(\App\Models\Site::class,'site_id')->onDelte('cascade');
             $table->string("endpoint");
             $table->string("period")->nullable();
             $table->boolean("alerts")->default(false);

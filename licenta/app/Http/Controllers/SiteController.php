@@ -58,4 +58,10 @@ class SiteController extends Controller
         return redirect()->route('sites.index')->with("success", "The site has been deleted");
     }
     
+    public function brokenLinks(Site $site)
+    {
+        $routes = $site->routes()->where('http_code', 'like', '2__')->get();
+        $brokenLinks = $site->broken_links;
+        return view('sites.broken-links', compact('site', 'brokenLinks', 'routes'));
+    }
 }

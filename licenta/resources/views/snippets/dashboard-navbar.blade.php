@@ -20,6 +20,11 @@
                         Schedulers
                     </a>
                 </li>
+                <li class="text-gray-500  hover:border-gray-300  border-transparent border-b-2 {{ Request::is("site/*/broken-links*") ? 'text-purple-500 border-purple-300' : '' }}">
+                    <a href="{{ route('sites.broken-links', ['site' => $site->id]) }}">
+                        Broken Links
+                    </a>
+                </li>
                 <li class="text-gray-500  hover:border-gray-300  border-transparent border-b-2 {{ Request::is("site/*/settings") ? 'text-purple-500 border-purple-300' : '' }}">
                     <a href="{{ route('settings.index', ['site' => $site->id]) }}">
                         Settings

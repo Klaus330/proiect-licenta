@@ -237,4 +237,35 @@ class Site extends Model
 
         return $this->last_incidents[0];
     }
+
+    public function routes()
+    {
+        return $this->hasMany(SiteRoute::class);
+    }
+
+    public function getRoutesArrayAttribute()
+    {
+        return array_map(function($el) {
+            return $el['route'];
+        }, $this->routes()->select('route')->get()->toArray());
+    }
+    
+    
+    public function getBrokenLinksAttribute()
+    {
+        return $this->routes()
+                    ->where('http_code', 'not like', '2__')
+                    ->where('http_code', 'not like', '3__')
+                    ->get();
+    }
+
+    public function hasBrokenLinks()
+    {
+        return $this->broken_links->isNotEmpty();
+    }
+
+    public function brokenLinksStatus()
+    {
+        return $this->broken_links->isEmpty() ? State::SUCCESS : State::ERROR;
+    }
 }
