@@ -86,6 +86,7 @@ class SiteController extends Controller
     public function sslCertificateHealth(Site $site)
     {
         $site->load('sslCertificate');
+        // dd($site->sslCertificate->subject);
         return view('sites.ssl-certificate-health', compact('site'));
     }
 }

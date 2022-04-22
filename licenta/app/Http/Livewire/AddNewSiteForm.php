@@ -27,9 +27,9 @@ class AddNewSiteForm extends Component
 
         try {
             $site = $siteRepository->createOrFail($data);
-            
-            mkdir($site->dir_reports);
-
+           if(! is_dir($site->dir_reports)){
+                mkdir($site->dir_reports);
+            }
             // Dispatch Site created event
             $this->emit('siteCreated');
             

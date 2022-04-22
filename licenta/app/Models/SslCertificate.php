@@ -26,7 +26,8 @@ class SslCertificate extends Model
       "validTo",
       "validFrom",
       "signatureTypeNID",
-      'expires'
+      'expires',
+      'ipAddress',
     ];
     
     protected $dates = ['validTo', 'validFrom'];
@@ -34,7 +35,6 @@ class SslCertificate extends Model
     protected $casts = [
       "extensions" => "array",
       "purposes" => "array",
-      'subject' => 'array',
     ];
   
     public function site()
@@ -50,11 +50,6 @@ class SslCertificate extends Model
     public function getavoidsSha1HashAttribute()
     {
       return $this->signatureTypeLN !== 'sha1WithRSAEncryption';
-    }
-
-    public function getIssuerAttribute($value)
-    {
-      return json_decode(json_decode($value));
     }
 
     public function hasExpired()

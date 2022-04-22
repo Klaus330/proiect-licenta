@@ -78,7 +78,7 @@ class SslCertificateCheckCommand extends Command
             return Command::FAILURE;
         }
     
-        $this->sslRepo->create($this->retrieveAttributes($certificate, $site));
+        $this->sslRepo->create($this->retrieveAttributes($certificate, $site, $ips[0]));
         $site->update(["ssl" => 1]);
         $this->info("Site ssl certificate verified");
     
@@ -108,14 +108,14 @@ class SslCertificateCheckCommand extends Command
         return openssl_x509_parse($cont["options"]["ssl"]["peer_certificate"]);
     }
 
-    protected function retrieveAttributes($certificate, $site)
+    protected function retrieveAttributes($certificate, $site, $ip)
     {
         return [
             "site_id" => $site->id,
             "name" => $certificate["name"],
-            "subject" => json_encode($certificate["subject"]),
+            "subject" => $certificate["subject"]['CN'],
             "hash" => $certificate["hash"],
-            "issuer" => json_encode($certificate["issuer"]),
+            "issuer" => $certificate["issuer"]['CN'],
             "version" => $certificate["version"],
             "serialNumber" => $certificate["serialNumber"],
             "serialNumberHex" => $certificate["serialNumberHex"],
@@ -126,6 +126,7 @@ class SslCertificateCheckCommand extends Command
             "extensions" => json_encode($certificate["extensions"]),
             "validTo" => (new \Carbon\Carbon($certificate["validTo_time_t"]))->toDateTime(),
             "validFrom" => (new \Carbon\Carbon($certificate["validFrom_time_t"]))->toDateTime(),
+            'ipAddress' => $ip,
         ];
     }
 }
