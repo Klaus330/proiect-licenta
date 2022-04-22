@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->job(SchedulersWatcher::class)->everyMinute();
         $schedule->job(UptimeMonitorWatcher::class)->everyMinute();
-        $schedule->job(SslCertificateWatcher::class)->everyDay();
+        $schedule->job(SslCertificateWatcher::class)->daily();
     }
 
     /**

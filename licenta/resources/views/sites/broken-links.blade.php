@@ -16,8 +16,8 @@
                     @forelse($brokenLinks as $link)
                         <tr class="divide-x divide-gray-200">
                             <td class="whitespace-nowrap py-4 pl-4 pr-4 text-sm font-medium text-gray-900 sm:pl-6">{{ $link->http_code }}</td>
-                            <td class="whitespace-nowrap p-4 text-sm text-purple-500"><a href="{{ $link->route }}">{{ $link->route }}</a></td>
-                            <td class="whitespace-nowrap p-4 text-sm text-purple-500"><a href="{{ $link->found_on }}">{{ $link->found_on }}</a></td>
+                            <td class="whitespace-nowrap p-4 text-sm text-purple-500 hover:text-purple-700"><a href="{{ $link->route }}">{{ $link->route }}</a></td>
+                            <td class="whitespace-nowrap p-4 text-sm text-purple-500 hover:text-purple-700"><a href="{{ $link->found_on }}">{{ $link->found_on }}</a></td>
                         </tr>
                     @empty
                         <tr>
@@ -54,8 +54,8 @@
                 @forelse ($routes as $link)
                     <tr class="divide-x divide-gray-200">
                         <td class="whitespace-nowrap py-3 px-4 text-sm font-medium text-gray-900 sm:pl-3">{{ $link->http_code }}</td>
-                        <td class="whitespace-nowrap py-3 px-4 text-sm text-purple-500"><a href="{{ $link->route }}">{{ $link->route }}</a></td>
-                        <td class="whitespace-nowrap py-3 px-4 text-sm text-purple-500"><a href="{{ $link->found_on }}">{{ $link->found_on }}</a></td>
+                        <td class="whitespace-nowrap py-3 px-4 text-sm text-purple-500 hover:text-purple-700"><a href="{{ $link->route }}">{{ $link->route }}</a></td>
+                        <td class="whitespace-nowrap py-3 px-4 text-sm text-purple-500 hover:text-purple-700"><a href="{{ $link->found_on }}">{{ $link->found_on }}</a></td>
                     </tr>
                 @empty
                 <tr>

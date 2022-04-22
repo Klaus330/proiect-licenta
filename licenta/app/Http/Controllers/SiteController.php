@@ -82,4 +82,10 @@ class SiteController extends Controller
     {
         return response()->download($site->dir_reports.'broken_links.csv', 'broken_links_'.date('Ymdhis').'.csv');
     }
+
+    public function sslCertificateHealth(Site $site)
+    {
+        $site->load('sslCertificate');
+        return view('sites.ssl-certificate-health', compact('site'));
+    }
 }

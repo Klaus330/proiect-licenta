@@ -124,8 +124,8 @@ class SslCertificateCheckCommand extends Command
             "signatureTypeNID" => $certificate["signatureTypeNID"],
             "purposes" => json_encode($certificate["purposes"]),
             "extensions" => json_encode($certificate["extensions"]),
-            "validTo" => (new \Carbon\Carbon($certificate["validTo_time_t"]))->toDate(),
-            "validFrom" => (new \Carbon\Carbon($certificate["validFrom_time_t"]))->toDate(),
+            "validTo" => (new \Carbon\Carbon($certificate["validTo_time_t"]))->toDateTime(),
+            "validFrom" => (new \Carbon\Carbon($certificate["validFrom_time_t"]))->toDateTime(),
         ];
     }
 }

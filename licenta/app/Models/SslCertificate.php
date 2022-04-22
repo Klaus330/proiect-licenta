@@ -34,7 +34,7 @@ class SslCertificate extends Model
     protected $casts = [
       "extensions" => "array",
       "purposes" => "array",
-      "issuer" => "array",
+      'subject' => 'array',
     ];
   
     public function site()
@@ -45,5 +45,20 @@ class SslCertificate extends Model
     public function scopeAboutToExpire(Builder $query)
     {
       $query->whereRaw('validTo <= ADDDATE(NOW(), INTERVAL expires DAY)');
+    }
+
+    public function getavoidsSha1HashAttribute()
+    {
+      return $this->signatureTypeLN !== 'sha1WithRSAEncryption';
+    }
+
+    public function getIssuerAttribute($value)
+    {
+      return json_decode(json_decode($value));
+    }
+
+    public function hasExpired()
+    {
+      return $this->validTo->isPast();
     }
 }
