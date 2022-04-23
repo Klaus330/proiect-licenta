@@ -88,7 +88,7 @@ class UptimeMonitor implements ShouldQueue
 
                 $attributes = [
                     "site_id" => $this->site->id,
-                    "dns_lookup" => $stats->getHandlerStat("namelookup_time"),
+                    "dns_lookup" => $stats->getHandlerStat("namelookup_time_us"),
                     "total_time" => $stats->getHandlerStat("total_time_us"),
                     "connect_time" => $stats->getHandlerStat("connect_time_us"),
                     "speed_download" => $stats->getHandlerStat("speed_download"),
@@ -99,11 +99,12 @@ class UptimeMonitor implements ShouldQueue
                     "content_length" => $stats->getHandlerStat("download_content_length"),
                     "primary_port" => $stats->getHandlerStat("primary_port"),
                     "appconnect_time" => $stats->getHandlerStat("appconnect_time"),
-                    "start_transfer_time" => $stats->getHandlerStat("starttransfer_time"),
+                    "start_transfer_time" => $stats->getHandlerStat("starttransfer_time_us"),
                     "http_code" => $stats->getHandlerStat("http_code"),
                     "pretransfer_time" => $stats->getHandlerStat("pretransfer_time_us"),
                     "redirect_count" => $stats->getHandlerStat("redirect_count"),
-                    "redirect_time" => $stats->getHandlerStat("redirect_time"),
+                    "redirect_time" => $stats->getHandlerStat("redirect_time_us"),
+                    'connect_time' => $stats->getHandlerStat("connect_time_us"),
                     "server" => $response->getHeaderLine("Server"),
                     "date" => $response->getHeaderLine("Date"),
                     "connection" => $response->getHeaderLine("Connection"),
@@ -117,6 +118,7 @@ class UptimeMonitor implements ShouldQueue
                     "ended_at" => $endedAt,
                     "duration" => floatval($duration),
                     'body' => $response->getBody(),
+                    'primary_ip' => $stats->getHandlerStat("primary_ip"),
                   ];
 
                 //   Create stats

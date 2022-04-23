@@ -23,6 +23,8 @@ Route::get('/', function () {
 Route::group(['middleware' => 'auth:sanctum'], function(){
     include 'scheduler-routes.php';
     include 'settings-routes.php';
+    
+    Route::get('site/{site}/performance', [SiteController::class, 'performance'])->name('sites.performance');
     Route::get('/site/{site}/ssl-certificate-health', [SiteController::class, 'sslCertificateHealth'])->name('site.ssl-certificate-health');
     Route::get('/site/{site}/download-broken-links', [SiteController::class, 'downloadBrokenLinks'])->name('site.download-broken-links');
     Route::get('site/{site}/delete', [SiteController::class, 'delete'])->name('sites.delete');

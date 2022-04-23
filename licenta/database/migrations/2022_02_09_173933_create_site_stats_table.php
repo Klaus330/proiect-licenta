@@ -44,6 +44,7 @@ class CreateSiteStatsTable extends Migration
             $table->double('duration')->nullable();
             $table->text('headers')->nullable();
             $table->text('body')->nullable();
+            $table->string('primary_ip')->nullable();
             $table->foreignIdFor(\App\Models\Site::class, 'site_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });

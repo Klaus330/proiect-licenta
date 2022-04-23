@@ -62,7 +62,7 @@ class SiteController extends Controller
     
     public function brokenLinks(Site $site)
     {
-        $routes = $site->routes()->where('http_code', 'like', '2__')->get();
+        $routes = $site->routes()->where('http_code', 'like', '2__')->paginate(15);
         $brokenLinks = $site->broken_links;
 
         if(count($brokenLinks) > 0){
@@ -74,7 +74,7 @@ class SiteController extends Controller
                 $csv->insertOne([$brokenLink->http_code, $brokenLink->route, $site->url]);
             }
         }
-
+        $site->loadCount('routes');
         return view('sites.broken-links', compact('site', 'brokenLinks', 'routes'));
     }
 
@@ -85,8 +85,41 @@ class SiteController extends Controller
 
     public function sslCertificateHealth(Site $site)
     {
-        $site->load('sslCertificate');
-        // dd($site->sslCertificate->subject);
+        $site->load('sslCertificate');        
         return view('sites.ssl-certificate-health', compact('site'));
+    }
+
+    public function performance(Site $site)
+    {
+        $stats = $site->stats()->where('created_at', '>=', now()->subHour())->get();
+            
+        // get the created_at column with 5 minute step
+        $created_at = $stats->pluck('created_at')->reverse()->toArray();
+        //filter created at to get only the 5 minutes
+        $created_at = array_values(array_filter($created_at, function($created_at) {
+            return $created_at->minute % 5 === 0;
+        }));
+
+        // array map transform the created_at to a string
+        $created_at = array_map(function($created_at) {
+            return $created_at->toDateTimeString();
+        }, $created_at);
+        
+    
+        // dd($stats->groupBy(function ($item, $key) {
+        //     return $item->created_at->format('Y-m-d H:i');
+        // }));
+
+
+        $data = [
+            'dates' => $created_at,
+            'dns_lookup' => $stats->map(function ($stat) {return $stat->dns_lookup / 1000;})->reverse()->values()->toArray(),
+            'content_download' => $stats->map(function ($stat) {return ($stat->total_time - $stat->pretransfer_time) / 1000;})->reverse()->values()->toArray(),
+            'tls_time' => $stats->map(function ($stat) {return ($stat->appconnect_time * 1000000 - $stat->dns_lookup ) / 1000;})->reverse()->values()->toArray(),
+            'transfer_time' => $stats->map(function ($stat) {return $stat->start_transfer_time / 1000;})->reverse()->values()->toArray(),
+            'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
+        ];
+
+        return view('sites.performance', compact('site', 'stats', 'data'));
     }
 }

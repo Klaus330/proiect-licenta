@@ -15,6 +15,11 @@
                         <i class="fas fa-th-large"></i> Overview
                     </a>
                 </li>
+                <li class="text-gray-500  hover:border-gray-300 border-transparent border-b-2  whitespace-nowrap text-sm {{ Request::is("site/*/performance") ? 'text-purple-500 border-purple-300' : '' }}">
+                    <a href="{{ route('sites.performance', ['site' => $site->id]) }}">
+                        <i class="fas fa-gauge"></i> Performance
+                    </a>
+                </li>
                 <li class="text-gray-500  hover:border-gray-300  border-transparent border-b-2  whitespace-nowrap text-sm {{ Request::is("site/*/schedulers*") ? 'text-purple-500 border-purple-300' : '' }}">
                     <a href="{{ route('schedulers.index', ['site' => $site->id]) }}">
                         <i class="fas fa-clock"></i> Schedulers

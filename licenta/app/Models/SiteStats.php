@@ -40,7 +40,8 @@ class SiteStats extends Model
     "started_at",
     "ended_at",
     "duration",
-    "body"
+    "body",
+    'primary_ip',
   ];
 
   protected $casts = [

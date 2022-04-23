@@ -39,7 +39,7 @@
 
     <section class="p-5 bg-white rounded">  
         <div class="py-2">
-            <p class="font-bold">We checked {{count($routes)}} urls</p> 
+            <p class="font-bold">We checked {{$site->routes_count}} urls</p> 
             <p>This table contains all urls that we crawled.</p>        
         </div>
         <table class="min-w-full divide-y divide-gray-300">
@@ -64,5 +64,6 @@
                 @endforelse
             </tbody>
           </table>
+          {{ $routes->links() }}
     </section>
 @endsection
