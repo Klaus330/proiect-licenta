@@ -21,6 +21,7 @@ class CrawlSite implements ShouldQueue
     protected Site $site;
     protected $links = [];
     protected $resgisteredLinks = [];
+    protected $alreadyCreatedRoutesArray = [];
 
     /**
      * Create a new job instance.
@@ -40,7 +41,7 @@ class CrawlSite implements ShouldQueue
     public function handle()
     {
         $site = $this->site;
-        $this->links = array_merge($this->links, $site->routes_array);
+        $this->alreadyCreatedRoutesArray = $this->site->routes_array;
         
         $response = Http::get($site->url);
         $links = $this->fetchAllRelatedLinks($response->body(), $site);
@@ -79,6 +80,19 @@ class CrawlSite implements ShouldQueue
             return;
         }
 
+        if(in_array($url, $this->alreadyCreatedRoutesArray))
+        {
+            $route = $site->routes()->where('route', $url)->first();
+            $route->update([
+                'found_on' =>  $foundOn,
+                'http_code' => $response->status(),
+                'updated_at' => now()
+            ]);
+            $this->resgisteredLinks[] = $url;
+
+            return;
+        }
+        
         SiteRoute::firstOrCreate([
             'site_id' => $site->id,
             'route' => $url,
@@ -110,6 +124,6 @@ class CrawlSite implements ShouldQueue
 
     public function failed($e)
     {
-        dd($e);
+        var_dump($e);
     }
 }

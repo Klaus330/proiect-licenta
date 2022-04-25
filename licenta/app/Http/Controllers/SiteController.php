@@ -106,9 +106,9 @@ class SiteController extends Controller
         $data = [
             'dates' => $created_at,
             'dns_lookup' => $stats->map(function ($stat) {return $stat->dns_lookup / 1000;})->reverse()->values()->toArray(),
-            'content_download' => $stats->map(function ($stat) {return ($stat->total_time - $stat->pretransfer_time) / 1000;})->reverse()->values()->toArray(),
+            'content_download' => $stats->map(function ($stat) {return ($stat->total_time - $stat->start_transfer_time) / 1000;})->reverse()->values()->toArray(),
             'tls_time' => $stats->map(function ($stat) {return ($stat->appconnect_time * 1000000 - $stat->dns_lookup ) / 1000;})->reverse()->values()->toArray(),
-            'transfer_time' => $stats->map(function ($stat) {return $stat->start_transfer_time / 1000;})->reverse()->values()->toArray(),
+            'transfer_time' => $stats->map(function ($stat) {return ($stat->start_transfer_time - $stat->appconnect_time * 1000000 ) / 1000;})->reverse()->values()->toArray(),
             'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
         ];        
 

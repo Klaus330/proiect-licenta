@@ -2,8 +2,15 @@
 
 @section('dashboard-content')
     @if(count($brokenLinks) > 0)
+      
         <section class="p-5 bg-white rounded">
-            <p class="font-bold">We found some internal broken links</p>   
+            <div class="flex items-center justify-between">
+                <p class="font-bold">We found some internal broken links</p>   
+                <a href="{{ route('site.download-broken-links', ['site' => $site]) }}" class="text-white bg-purple-600 py-2 px-3 text-xs rounded text-center hover:bg-purple-800">
+                    <i class="fas fa-download"></i> Download broken links .csv report
+                </a>
+            </div>
+            
             <table class="min-w-full divide-y divide-gray-300">
                 <thead class="bg-gray-50">
                 <tr class="divide-x divide-gray-200">
@@ -26,10 +33,6 @@
                     @endforelse
                 </tbody>
             </table>
-
-            <p class="py-2">
-                Download broken links report: <a href="{{ route('site.download-broken-links', ['site' => $site]) }}" class="text-white bg-purple-600 py-1.5 px-2 text-xs rounded text-center hover:bg-purple-800"><i class="fas fa-download"></i> Download .csv</a>
-             </p>
         </section>
     @else
         <section class="p-3 bg-white rounded">

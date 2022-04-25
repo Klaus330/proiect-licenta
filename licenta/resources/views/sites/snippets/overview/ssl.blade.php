@@ -23,6 +23,11 @@
                             <span class="font-semibold text-xs">
                                 {{ $ssl->expires }} days</span>
                         </div>
+                        <div class="flex items-start flex-col">
+                            <span class="text-gray-400 text-sm font-light">Validity</span>
+                            <span class="font-semibold text-xs">
+                                {{ now()->diffInDays($site->sslCertificate->validFrom) }} days remaining</span>
+                        </div>
                     </div>
                 </div>
                 {{-- <div class="flex justify-content-between w-full rounded max-h-9">

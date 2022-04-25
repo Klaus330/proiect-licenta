@@ -9,7 +9,7 @@ class SiteRoute extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['site_id', 'route', 'http_code', 'found_on'];
+    protected $fillable = ['site_id', 'route', 'http_code', 'found_on', 'updated_at'];
 
     public function host()
     {

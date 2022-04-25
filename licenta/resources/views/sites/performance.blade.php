@@ -72,7 +72,22 @@
         type: 'line',
         data: {
             labels:@json($data['dates']),
-            datasets: [{
+            datasets: [
+            {
+                label: 'DNS',
+                data: {{json_encode($data['dns_lookup'])}},
+                borderColor: ['rgba(255, 206, 86, 1)'],
+                backgroundColor:['rgba(255, 206, 86, 0.1)'],
+                borderWidth: 2,
+            },
+            {
+                label: 'Content download',
+                data: {{json_encode($data['content_download'])}},
+                borderColor: [ 'rgba(255, 159, 64, 1)'],
+                backgroundColor: [ 'rgba(255, 159, 64, 0.1)',],
+                borderWidth: 2,
+            },
+            {
                 label: 'Remote server processing',
                 data: {{json_encode($data['transfer_time'])}},
                 borderColor: [
@@ -86,24 +101,14 @@
                 data: {{json_encode($data['tls_time'])}},
                 borderColor: ['rgba(54, 162, 235, 1)',],
                 backgroundColor: ['rgba(54, 162, 235, 0.1)',],
-            },
-            {
-                label: 'DNS',
-                data: {{json_encode($data['dns_lookup'])}},
-                borderColor: ['rgba(255, 206, 86, 1)'],
-                backgroundColor:['rgba(255, 206, 86, 0.1)'],
-            },
-            {
-                label: 'Content download',
-                data: {{json_encode($data['content_download'])}},
-                borderColor: [ 'rgba(255, 159, 64, 1)'],
-                backgroundColor: [ 'rgba(255, 159, 64, 0.2)',],
+                borderWidth: 2,
             },
             {
                 label: 'Total Time',
                 data: {{json_encode($data['total_time'])}},
                 borderColor: ['rgba(75, 192, 192, 1)',],
                 backgroundColor: ['rgba(75, 192, 192, 0.1)',],
+                borderWidth: 2,
             },
         ]
         },
@@ -116,7 +121,7 @@
                     beginAtZero: true
                 }
             },
-            // fill: true
+            fill: true
         }
     });
     performance_chart.resize(600, 600);

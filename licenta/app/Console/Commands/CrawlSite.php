@@ -42,80 +42,9 @@ class CrawlSite extends Command
      */
     public function handle()
     {
-        $site = Site::find($this->argument('site'));
-        $this->links = array_merge($this->links, $site->routes_array);
-        
-        $response = Http::get($site->url);
-        $this->info("Crawling {$site->url}");
-        $links = $this->fetchAllRelatedLinks($response->body(), $site);
-        $this->info("No. links found:".count($links));
-        $this->links = array_merge($this->links, $links);
-        $foundOn = $site->url;
-
-        foreach($links as $link) {
-            $this->info("Crawling {$link}");
-            $this->crawlUrl($link, $foundOn, $site, 30);
-            $this->info("No. links found:".count($links));
-        }
+        $site = Site::first();
+        dispatch(new \App\Jobs\CrawlSite($site))->onQueue('crawlers');
 
         return Command::SUCCESS;
-    }
-
-
-    protected function crawlUrl($url, $foundOn, $site, $depth)
-    {
-        if ($depth == 0) {
-            return;
-        }
-
-        $this->info("Crawling {$url}");
-        $response = Http::get($url);
-        $this->registerUrl($response, $foundOn, $url, $site);
-        $foundOn = $url;
-        $links = $this->fetchAllRelatedLinks($response->body(), $site);
-        $this->info("No. links found: ".count($links));
-        $this->links = array_merge($this->links, $links);
-
-        foreach($links as $link) {
-            $this->crawlUrl($link, $foundOn, $site, $depth - 1);
-        }        
-    }
-
-
-    protected function registerUrl($response, $foundOn, $url, $site)
-    {
-        if(in_array($url, $this->resgisteredLinks))
-        {
-            return;
-        }
-
-        $this->info("Registering {$url}");
-        SiteRoute::firstOrCreate([
-            'site_id' => $site->id,
-            'route' => $url,
-            'found_on' =>  $foundOn,
-            'http_code' => $response->status()
-        ]);
-        $this->info("{$url} registered");
-
-        $this->resgisteredLinks[] = $url;
-    }
-
-    protected function fetchAllRelatedLinks($content, $site){
-        preg_match_all('/<a.*?href="(.*?)".*?>/', $content, $matches);
-        $links = array_values(array_filter($matches[1], function($el) use ($site) {
-            return (strpos($el, $site->url) === 0 || substr($el, 0, 1) === '/' || substr($el, 0, 1) === '?' ) && !in_array($el, $this->links);
-        }));
-
-        $links = array_map(function($el) use ($site) {
-            if(strpos($el, $site->url) !== 0){
-                return $site->url . $el;
-            }
-            
-            return $el;
-        }, $links);
-
-        $links = array_diff($links, $this->links);
-        return $links;
     }
 }

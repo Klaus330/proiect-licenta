@@ -154,7 +154,6 @@ class UptimeMonitor implements ShouldQueue
       {
         $attributes = $e->getExceptionData();
         $attributes['http_code'] = self::BAD_HOST_PROVIDED_CODE_ERROR;
-        dd($this->statsRepo->create($attributes));
 
         $next_run = $this->schedule->getNextRunDate(now());
         $this->site->update([
