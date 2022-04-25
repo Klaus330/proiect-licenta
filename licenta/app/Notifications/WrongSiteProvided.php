@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class WrongSiteProvided extends Notification
+class WrongSiteProvided extends Notification implements ShouldQueue
 {
     use Queueable;
 

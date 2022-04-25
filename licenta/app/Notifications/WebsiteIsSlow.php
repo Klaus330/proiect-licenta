@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class WebsiteIsSlow extends Notification
+class WebsiteIsSlow extends Notification implements ShouldQueue
 {
     use Queueable;
 

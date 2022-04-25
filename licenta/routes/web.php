@@ -24,6 +24,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     include 'scheduler-routes.php';
     include 'settings-routes.php';
     
+    Route::get('/dashboard', [SiteController::class, 'index'])->name('dashboard');
     Route::get('site/{site}/performance', [SiteController::class, 'performance'])->name('sites.performance');
     Route::get('/site/{site}/ssl-certificate-health', [SiteController::class, 'sslCertificateHealth'])->name('site.ssl-certificate-health');
     Route::get('/site/{site}/download-broken-links', [SiteController::class, 'downloadBrokenLinks'])->name('site.download-broken-links');
@@ -32,7 +33,3 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     Route::get('/site/{site}/broken-links', [SiteController::class, 'brokenLinks'])->name('sites.broken-links');
     Route::resource('sites', SiteController::class)->middleware('auth');
 });
-
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');

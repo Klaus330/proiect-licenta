@@ -168,7 +168,7 @@ class UptimeMonitor implements ShouldQueue
         }
       }
 
-      dd($e);
+      var_dump($e);
     }
 
     protected function verifyTextOnResponse($response): bool
@@ -213,8 +213,7 @@ class UptimeMonitor implements ShouldQueue
         }
 
         $current = $latestStats[0];
-        $previous = $latestStats[1];
-        return $current->duration - $previous->duration > self::MODIFIED_PERFORMANCE_LIMIT;
+        return $current->duration  > $this->site->average_performance / 2;
     }
 
     protected function isSiteTooSlow()
@@ -245,7 +244,7 @@ class UptimeMonitor implements ShouldQueue
             return;
         }
     
-        if ($this->isChangeInPerformance()) {
+        if ($this->isChangeInPerformance() && $this->site->allowedToSendEmail()) {
             $when = now()->addMinute();
             $this->sendNotification((new ChangeInPerformance($this->site))->delay($when));
             return;

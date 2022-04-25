@@ -272,4 +272,14 @@ class Site extends Model
     {
         return $_SERVER['DOCUMENT_ROOT'] . '/reports/' . $this->id . '/';
     }
+    
+
+    public function getAveragePerformanceAttribute() : int
+    {
+        $stats = $this->stats->take(30);
+
+        return (int) ($stats->reduce(function($carry, $item){
+            return $carry + $item->duration;
+        }) / count($stats));
+    }
 }

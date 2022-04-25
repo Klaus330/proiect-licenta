@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class SslCertificateExpiration extends Notification
+class SslCertificateExpiration extends Notification implements ShouldQueue
 {
     use Queueable;
 

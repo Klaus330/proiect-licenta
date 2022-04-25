@@ -13,26 +13,6 @@ class SettingsController extends Controller
         return view('sites.settings.index', compact('site'));
     }
     
-    // public function notifications()
-    // {
-    //     return view("settings.notifications");
-    // }
-
-    // public function teams()
-    // {
-    //     return view("settings.teams");
-    // }
-
-    // public function billing()
-    // {
-    //     return view("settings.billing");
-    // }
-
-    // public function integrationWithSlack()
-    // {
-    //     return view("settings.integrations.slack");
-    // }
-
     public function uptime(Site $site)
     {
         return view('sites.settings.uptime', compact('site'));
