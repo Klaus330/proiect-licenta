@@ -34,7 +34,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
-                                    <a href="{{ route('sites.show', ['site' => $site->id]) }}">
+                                    <a href="{{ route('sites.show', ['site' => $site->id]) }}" data-tippy-content="See uptime page">
                                         @livewire('status-bubble', [
                                             'status' => $site->getStatus()->label(),
                                             'success' => ['message' => 'Up'],
@@ -45,7 +45,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
-                                    <a href="{{ route('site.ssl-certificate-health', ['site' => $site->id]) }}">
+                                    <a href="{{ route('site.ssl-certificate-health', ['site' => $site->id]) }}" data-tippy-content="See certificate health">
                                         @livewire('status-bubble', [
                                             'status' => $site->getSslCertificateStatus()->label(),
                                             'success' => ['message' => 'Valid'],
@@ -57,7 +57,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 <div class=" flex items-center">
-                                    <a href="{{ route('schedulers.index', ['site' => $site->id]) }}">
+                                    <a href="{{ route('schedulers.index', ['site' => $site->id]) }}" data-tippy-content="See schedulers page">
                                         @livewire('status-bubble', [
                                             'status' => $site->hasSchedulers()->label(),
                                             'success' => ['message' => 'Monitoring'],
@@ -67,7 +67,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 flex items-center">
-                                <a href="{{ route('sites.broken-links', ['site' => $site->id]) }}">
+                                <a href="{{ route('sites.broken-links', ['site' => $site->id]) }}"  data-tippy-content="See broken links page">
                                     @livewire('status-bubble', [
                                         'status' => $site->brokenLinksStatus()->label(),
                                         'success' => ['message' => 'Not found'],
@@ -76,7 +76,9 @@
                                 </a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <button class="text-green-500 hover:text-green-600" wire:click="dispatchUptimeEvent({{$site->id}})"><i class="fa-solid fa-play"></i></button>
+                                <button class="text-green-500 hover:text-green-600" 
+                                        wire:click="dispatchUptimeEvent({{$site->id}})"
+                                        data-tippy-content="Run Uptime Job Now"><i class="fa-solid fa-play"></i></button>
                             </td>
                         </tr>
                     @empty

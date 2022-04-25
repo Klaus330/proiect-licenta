@@ -12,7 +12,9 @@
                                 Started at
                             </td>
                             <td class="py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{$stats->started_at}}
+                                <a href="https://www.timeanddate.com/worldclock/fixedtime.html?iso={{$stats->started_at->toIso8601ZuluString()}}"
+                                   data-tippy-content="See the time in your timezone"
+                                   target="_blank">{{$stats->started_at}} (UTC)</a>
                             </td>
                         </tr>
                         <tr class="border-b  border-dashed border-gray-200 ">
@@ -20,7 +22,9 @@
                                 Ended at
                             </td>
                             <td class="py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{$stats->ended_at}}
+                                <a href="https://www.timeanddate.com/worldclock/fixedtime.html?iso={{$stats->ended_at->toIso8601ZuluString()}}"  
+                                   data-tippy-content="See the time in your timezone"
+                                   target="_blank">{{$stats->ended_at}} (UTC)</a>
                             </td>
                         </tr>
                         <tr class="border-b  border-dashed border-gray-200 ">
@@ -28,6 +32,7 @@
                                 Duration
                             </td>
                             <td class="py-4 whitespace-nowrap text-sm text-gray-500">
+                                {{-- get locale date format --}}
                                 {{$stats->getFormatedDuration()}}
                             </td>
                         </tr>
