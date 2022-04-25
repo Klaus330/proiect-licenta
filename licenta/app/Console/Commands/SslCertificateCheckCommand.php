@@ -71,16 +71,14 @@ class SslCertificateCheckCommand extends Command
     
         try {
             $certificate = $this->getCert($ips[0], $site->getHost());
+            $this->sslRepo->create($this->retrieveAttributes($certificate, $site, $ips[0]));
+            $this->info("Site ssl certificate verified");
         } catch (\Exception $e) {
             // event(new SslVerificationFailed($site));
 
             $this->error($e->getMessage());
             return Command::FAILURE;
         }
-    
-        $this->sslRepo->create($this->retrieveAttributes($certificate, $site, $ips[0]));
-        $site->update(["ssl" => 1]);
-        $this->info("Site ssl certificate verified");
     
         return Command::SUCCESS;
     }

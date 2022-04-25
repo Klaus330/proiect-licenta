@@ -93,24 +93,16 @@ class SiteController extends Controller
     {
         $stats = $site->stats()->where('created_at', '>=', now()->subHour())->get();
             
-        // get the created_at column with 5 minute step
         $created_at = $stats->pluck('created_at')->reverse()->toArray();
-        //filter created at to get only the 5 minutes
         $created_at = array_values(array_filter($created_at, function($created_at) {
             return $created_at->minute % 5 === 0;
         }));
 
-        // array map transform the created_at to a string
         $created_at = array_map(function($created_at) {
             return $created_at->toDateTimeString();
         }, $created_at);
         
     
-        // dd($stats->groupBy(function ($item, $key) {
-        //     return $item->created_at->format('Y-m-d H:i');
-        // }));
-
-
         $data = [
             'dates' => $created_at,
             'dns_lookup' => $stats->map(function ($stat) {return $stat->dns_lookup / 1000;})->reverse()->values()->toArray(),
@@ -118,7 +110,7 @@ class SiteController extends Controller
             'tls_time' => $stats->map(function ($stat) {return ($stat->appconnect_time * 1000000 - $stat->dns_lookup ) / 1000;})->reverse()->values()->toArray(),
             'transfer_time' => $stats->map(function ($stat) {return $stat->start_transfer_time / 1000;})->reverse()->values()->toArray(),
             'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
-        ];
+        ];        
 
         return view('sites.performance', compact('site', 'stats', 'data'));
     }

@@ -135,6 +135,15 @@
                                             </td>
                                             <td class="w-8/12"></td>
                                         </tr>
+                                        <tr class="border-b  border-dashed border-gray-200 ">
+                                            <td class="py-4 whitespace-nowrap text-sm text-gray-900 w-3/12">
+                                                Certificate retrieved from
+                                            </td>
+                                            <td class="py-4 whitespace-nowrap text-sm text-gray-500 w-1/12 px-3">
+                                                {{ $site->sslCertificate->ipAddress }}:443
+                                            </td>
+                                            <td class="w-8/12"></td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>

@@ -19,7 +19,6 @@ class Site extends Model
     public $fillable = [
         "url",
         "user_id",
-        "ssl",
         "status",
         "next_run",
         "emailed_at",
