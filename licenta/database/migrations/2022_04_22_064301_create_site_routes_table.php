@@ -17,7 +17,7 @@ class CreateSiteRoutesTable extends Migration
         Schema::create('site_routes', function (Blueprint $table) {
             $table->id();
             $table->foreignIdFor(Site::class, 'site_id')->onDelete('cascade');
-            $table->string('route');
+            $table->text('route');
             $table->string('http_code');
             $table->string('found_on')->nullable();
             $table->timestamps();

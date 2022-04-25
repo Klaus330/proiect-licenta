@@ -5,7 +5,8 @@
         <div>
             @include('sites.settings.tabs')
 
-            <form action="{{route('sites.destroy', ['site' => $site->id])}}" method="POST"
+            <form x-data action="{{route('sites.destroy', ['site' => $site->id])}}" method="POST" 
+                @submit="if(confirm('Are you sure?')) { } else {  $event.stopImmediatePropagation(); $event.preventDefault(); }"
                 class="relative space-y-8 bg-white rounded-lg w-75 pb-5 sm:mb-5 lg:mb-0">
                 @csrf
                 @method("DELETE")

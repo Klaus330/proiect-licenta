@@ -27,9 +27,11 @@ class AddNewSiteForm extends Component
 
         try {
             $site = $siteRepository->createOrFail($data);
-           if(! is_dir($site->dir_reports)){
+            
+            if(! is_dir($site->dir_reports)){
                 mkdir($site->dir_reports);
             }
+
             // Dispatch Site created event
             $this->emit('siteCreated');
             
@@ -41,7 +43,7 @@ class AddNewSiteForm extends Component
 
             // Notify the user
             $when = now()->addMinutes(15);
-            // auth()->user()->notify((new UptimeMonitorRegistered()))->delay($when);
+            $site->owner->notify((new UptimeMonitorRegistered())->delay($when));
 
         } catch (SiteDuplication $e) {
             $this->addError('url', $e->getMessage());
