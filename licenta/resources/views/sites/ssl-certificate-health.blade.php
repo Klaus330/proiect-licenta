@@ -101,7 +101,7 @@
                                             </td>
                                             <td class="py-4 whitespace-nowrap text-sm text-gray-500 w-1/12 px-3">
                                                 {{ $site->sslCertificate->validTo->toDateTimeString() }}
-                                                ({{ now()->diffInDays($site->sslCertificate->validFrom) }} days remaining)
+                                                ({{ now()->diffInDays($site->sslCertificate->validTo) }} days remaining)
                                             </td>
                                             <td class="w-8/12"></td>
                                         </tr>

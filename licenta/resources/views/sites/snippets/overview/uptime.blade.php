@@ -1,4 +1,7 @@
 @if (count($latestStats) > 0)
+@php
+    $lastStats = $latestStats->first();    
+@endphp
     <div class="w-full h-full">
         <a href="{{ route('sites.show', ['site' => $site->id]) }}">
             <div class="h-full">
@@ -10,17 +13,17 @@
                         <div class="grid grid-cols-2">
                             <div class="flex items-start flex-col">
                                 <span class="text-gray-400 text-sm font-light">Performance</span>
-                                <span class="font-semibold text-sm"> {{ $latestStats[0]->duration ?? '--' }} ms</span>
+                                <span class="font-semibold text-sm"> {{ $lastStats->duration ?? '--' }} ms</span>
                             </div>
                             <div class="flex items-start flex-col">
                                 <span class="text-gray-400 text-sm font-light">Status</span>
                                 <span class="font-semibold text-sm">
-                                    {{ $latestStats[0]->reason_phrase ?? '--' }}</span>
+                                    {{ $lastStats->reason_phrase ?? '--' }}</span>
                             </div>
                             <div class="flex items-start flex-col">
                                 <span class="text-gray-400 text-sm font-light">Last check</span>
                                 <span class="font-semibold text-xs">
-                                    {{ $latestStats[0]->ended_at->diffForHumans() ?? '--' }}</span>
+                                    {{ $lastStats->ended_at->diffForHumans() ?? '--' }}</span>
                             </div>
                             <div class="flex items-start flex-col">
                                 <span class="text-gray-400 text-sm font-light">Last incident</span>
@@ -47,11 +50,18 @@
                                 @endif
                             @endfor
                         </div>
-                        <div
-                            class="flex items-center justify-center rounded-br {{ $latestStats[0]->successful() ? 'bg-green-300' : 'bg-red-300' }}">
-                            <span class="text-xs p-0.5 px-1.5"
-                                title="{{ $latestStats[0]->created_at->toFormattedDateString() }}">{{ $latestStats[0]->successful() ? 'Healthy' : 'Down' }}</span>
-                        </div>
+                        @if(isset($latestStats[0]))
+                            <div
+                                class="flex items-center justify-center rounded-br {{ $latestStats[0]->successful() ? 'bg-green-300' : 'bg-red-300' }}">
+                                <span class="text-xs p-0.5 px-1.5"
+                                    title="{{ $latestStats[0]->created_at->toFormattedDateString() }}">{{ $latestStats[0]->successful() ? 'Healthy' : 'Down' }}</span>
+                            </div>
+                        @else
+                            <div
+                                class="flex items-center justify-center rounded-br bg-gray-200">
+                                <span class="text-xs p-0.5 px-1.5">No checks</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </div>

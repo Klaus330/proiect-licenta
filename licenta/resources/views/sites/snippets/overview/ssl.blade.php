@@ -26,7 +26,7 @@
                         <div class="flex items-start flex-col">
                             <span class="text-gray-400 text-sm font-light">Validity</span>
                             <span class="font-semibold text-xs">
-                                {{ now()->diffInDays($site->sslCertificate->validFrom) }} days remaining</span>
+                                {{ $site->sslCertificate->validTo->diffInDays(now()) }} days remaining</span>
                         </div>
                     </div>
                 </div>

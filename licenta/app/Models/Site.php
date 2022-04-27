@@ -216,7 +216,7 @@ class Site extends Model
             $latestStats[0] = $latestStats[1];
         }
 
-        return $latestStats;
+        return collect($latestStats);
     }
 
     public function getLastIncidentsAttribute()

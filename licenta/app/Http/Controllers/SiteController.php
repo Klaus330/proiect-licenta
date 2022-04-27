@@ -92,25 +92,27 @@ class SiteController extends Controller
     public function performance(Site $site)
     {
         $stats = $site->stats()->where('created_at', '>=', now()->subHour())->get();
-            
-        $created_at = $stats->pluck('created_at')->reverse()->toArray();
-        $created_at = array_values(array_filter($created_at, function($created_at) {
-            return $created_at->minute % 5 === 0;
-        }));
-
-        $created_at = array_map(function($created_at) {
-            return $created_at->toDateTimeString();
-        }, $created_at);
         
-    
-        $data = [
-            'dates' => $created_at,
-            'dns_lookup' => $stats->map(function ($stat) {return $stat->dns_lookup / 1000;})->reverse()->values()->toArray(),
-            'content_download' => $stats->map(function ($stat) {return ($stat->total_time - $stat->start_transfer_time) / 1000;})->reverse()->values()->toArray(),
-            'tls_time' => $stats->map(function ($stat) {return ($stat->appconnect_time * 1000000 - $stat->dns_lookup ) / 1000;})->reverse()->values()->toArray(),
-            'transfer_time' => $stats->map(function ($stat) {return ($stat->start_transfer_time - $stat->appconnect_time * 1000000 ) / 1000;})->reverse()->values()->toArray(),
-            'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
-        ];        
+        if($stats->isNotEmpty()){
+            $created_at = $stats->pluck('created_at')->reverse()->toArray();
+            $created_at = array_values(array_filter($created_at, function($created_at) {
+                return $created_at->minute % 5 === 0;
+            }));
+
+            $created_at = array_map(function($created_at) {
+                return $created_at->toDateTimeString();
+            }, $created_at);
+            
+        
+            $data = [
+                'dates' => $created_at,
+                'dns_lookup' => $stats->map(function ($stat) {return $stat->dns_lookup / 1000;})->reverse()->values()->toArray(),
+                'content_download' => $stats->map(function ($stat) {return ($stat->total_time - $stat->start_transfer_time) / 1000;})->reverse()->values()->toArray(),
+                'tls_time' => $stats->map(function ($stat) {return ($stat->appconnect_time * 1000000 - $stat->dns_lookup ) / 1000;})->reverse()->values()->toArray(),
+                'transfer_time' => $stats->map(function ($stat) {return ($stat->start_transfer_time - $stat->appconnect_time * 1000000 ) / 1000;})->reverse()->values()->toArray(),
+                'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
+            ];
+        }
 
         return view('sites.performance', compact('site', 'stats', 'data'));
     }

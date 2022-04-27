@@ -167,7 +167,7 @@ class UptimeMonitor implements ShouldQueue
         }
       }
 
-      var_dump($e);
+    //   var_dump($e);
     }
 
     protected function verifyTextOnResponse($response): bool
