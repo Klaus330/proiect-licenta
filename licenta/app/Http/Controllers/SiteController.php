@@ -112,6 +112,8 @@ class SiteController extends Controller
                 'transfer_time' => $stats->map(function ($stat) {return ($stat->start_transfer_time - $stat->appconnect_time * 1000000 ) / 1000;})->reverse()->values()->toArray(),
                 'total_time' =>  $stats->map(function ($stat) {return $stat->total_time / 1000;})->reverse()->values()->toArray(),
             ];
+        }else{
+            $data = [];
         }
 
         return view('sites.performance', compact('site', 'stats', 'data'));

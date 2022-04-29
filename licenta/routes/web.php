@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SiteController;
 use App\Models\Site;
 use App\Repositories\SiteStatsRepository;
@@ -25,6 +26,7 @@ Route::group(['middleware' => 'auth:sanctum'], function(){
     include 'settings-routes.php';
     
     Route::get('/dashboard', [SiteController::class, 'index'])->name('dashboard');
+    Route::post('/mark-notification-as-read', [HomeController::class, 'markNotificationAsRead'])->name('mark-notification-as-read');
     Route::get('site/{site}/performance', [SiteController::class, 'performance'])->name('sites.performance');
     Route::get('/site/{site}/ssl-certificate-health', [SiteController::class, 'sslCertificateHealth'])->name('site.ssl-certificate-health');
     Route::get('/site/{site}/download-broken-links', [SiteController::class, 'downloadBrokenLinks'])->name('site.download-broken-links');

@@ -33,6 +33,10 @@
                 @livewire('profile.logout-other-browser-sessions-form')
             </div>
 
+
+           @livewire('notifications-section')
+
+
             @if (Laravel\Jetstream\Jetstream::hasAccountDeletionFeatures())
                 <x-jet-section-border />
 

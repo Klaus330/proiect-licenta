@@ -29,7 +29,7 @@ class UptimeMonitorRegistered extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['database'];
     }
 
     /**
@@ -58,7 +58,7 @@ class UptimeMonitorRegistered extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'Your uptime monitor has been successfully registered.',
         ];
     }
 }

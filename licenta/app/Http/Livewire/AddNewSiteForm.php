@@ -42,8 +42,8 @@ class AddNewSiteForm extends Component
             dispatch(new \App\Jobs\CrawlSite($site))->onQueue('crawlers');
 
             // Notify the user
-            $when = now()->addMinutes(15);
-            $site->owner->notify((new UptimeMonitorRegistered())->delay($when));
+            // $when = now()->addMinutes(15);
+            $site->owner->notify((new UptimeMonitorRegistered())->delay(now()->addSeconds(5)));
 
         } catch (SiteDuplication $e) {
             $this->addError('url', $e->getMessage());
