@@ -10,7 +10,7 @@
                     {{ $scheduler->endpoint === "" ? '/' : $scheduler->endpoint }}
                 </p>
                 <p>
-                    @livewire('status-bubble', ['status' => $scheduler->getStatus()])
+                    @livewire('status-bubble', ['status' => $scheduler->getStatus()->label()])
                 </p>
                 <p>
                     <i class="fa-solid fa-repeat mr-1"></i>
