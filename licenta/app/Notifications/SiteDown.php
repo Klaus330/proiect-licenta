@@ -29,7 +29,7 @@ class SiteDown extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -41,7 +41,7 @@ class SiteDown extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
+                    ->line('Alert! Your site seems to be down.')
                     ->action('Notification Action', url('/'))
                     ->line('Thank you for using our application!');
     }
@@ -55,7 +55,8 @@ class SiteDown extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "Alert! Your site seems to be down.",
+            'link' => url(route('sites.show', $this->site->id)),
         ];
     }
 }

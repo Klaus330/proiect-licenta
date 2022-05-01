@@ -124,6 +124,7 @@ class CrawlSite implements ShouldQueue
 
     public function failed($e)
     {
-        var_dump($e);
+        var_dump("Job failed");
+        // dd($e);
     }
 }

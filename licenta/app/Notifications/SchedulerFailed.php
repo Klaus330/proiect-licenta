@@ -34,7 +34,7 @@ class SchedulerFailed extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -61,7 +61,8 @@ class SchedulerFailed extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "Your {$this->scheduler->name} scheduler has failed.",
+            'link' => url(route('schedulers.index', ['site' => $this->scheduler->site->id])),
         ];
     }
 }

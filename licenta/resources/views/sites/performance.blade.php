@@ -19,7 +19,7 @@
         </div>
     </section>
 
- 
+{{--  
         <section class="p-5 bg-white my-4 rounded">
             <div class="mb-2">
                 <h1 class="text-md font-semibold">Performance checks</h1>
@@ -34,7 +34,7 @@
                     <p class="text-sm text-gray-700 col-span-9">The time it takes to resolve the domain name to an IP address via DNS.</p>
                 </div>
             </div>
-        </section>
+        </section> --}}
 
         <section class="p-5 bg-white my-4 rounded">
             <div class="mb-2">

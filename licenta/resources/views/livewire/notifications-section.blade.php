@@ -21,7 +21,7 @@
                     <ul class="w-full"  x-data>
                         @foreach ($unreadNotifications as $index => $item)
                             <li class="w-full flex justify-between items-center @if($index>=1) border-t border-gray-300 @endif py-2" wire:key="{{$item->id}}">
-                                {{ $item->data['message'] }}
+                                <a href="{{$item->data['link']}}" class="text-indigo-500">{{ $item->data['message'] }}</a>
 
                                 <span class="text-xs hover:text-indigo-500 pr-1 cursor-pointer hover:text-indigo-400 text-lg" @click="$wire.markNotificationAsRead('{{$item->id}}'); Livewire.emit('markNotificationAsRead', '{{$item->id}}')">
                                     &times;

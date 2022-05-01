@@ -32,7 +32,7 @@ class SiteRecovered extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -59,7 +59,8 @@ class SiteRecovered extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "The {$this->site->name} is up again.",
+            'link' => url(route('sites.show', $this->site->id)),
         ];
     }
 }

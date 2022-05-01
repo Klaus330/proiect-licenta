@@ -244,6 +244,7 @@ class UptimeMonitor implements ShouldQueue
         }
     
         if ($this->isChangeInPerformance() && $this->site->allowedToSendEmail()) {
+            $this->site->update(["emailed_at" => now()->toDateTime()]);
             $when = now()->addMinute();
             $this->sendNotification((new ChangeInPerformance($this->site))->delay($when));
             return;

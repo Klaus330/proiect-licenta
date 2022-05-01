@@ -52,9 +52,9 @@
                         @click.away="showMenu = false"
                         >
                         <!-- Active: "bg-gray-100", Not Active: "" -->
-                        <a href="/teams" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">
+                        {{-- <a href="/teams" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-1">
                             Team
-                        </a>
+                        </a> --}}
                         <a href="/user/profile" class="block px-4 py-2 text-sm text-gray-700" role="menuitem" tabindex="-1" id="user-menu-item-2">
                             Your Profile
                         </a>

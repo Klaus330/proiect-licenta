@@ -31,7 +31,7 @@ class SslCertificateExpiration extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -58,7 +58,8 @@ class SslCertificateExpiration extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "The ssl certificate for {$this->site->name} is about to expire.",
+            'link' => url(route('site.ssl-certificate-health', ['site' => $this->site->id])),
         ];
     }
 }

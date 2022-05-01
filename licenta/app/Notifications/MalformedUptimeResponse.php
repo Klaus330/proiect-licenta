@@ -33,7 +33,7 @@ class MalformedUptimeResponse extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -61,7 +61,8 @@ class MalformedUptimeResponse extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'There seems to be an issue with your website',
+            'link' => url(route('sites.performance', $this->site->id)),
         ];
     }
 }

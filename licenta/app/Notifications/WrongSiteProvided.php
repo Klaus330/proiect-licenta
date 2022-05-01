@@ -31,7 +31,7 @@ class WrongSiteProvided extends Notification implements ShouldQueue
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -57,7 +57,8 @@ class WrongSiteProvided extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'We could not access your host.',
+            'link' => url(route('sites.index')),
         ];
     }
 }
