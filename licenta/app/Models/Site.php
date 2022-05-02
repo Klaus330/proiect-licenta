@@ -177,12 +177,12 @@ class Site extends Model
 
     public function validateResponse($responseBody)
     {
-      return $this->check === $responseBody;
+      return preg_match("/{$this->check}/", $responseBody);
     }
     
     public function allowedToSendEmail()
     {
-      return now()->diffInHours($this->emailed_at) > 1;
+      return $this->emailed_at === null || now()->diffInHours($this->emailed_at) > 1;
     }
 
     public function hasTimeout()
@@ -224,6 +224,7 @@ class Site extends Model
         return $this->stats()
                     ->where('http_code', 'not like', '2__')
                     ->where('http_code', 'not like', '3__')
+                    ->take(10)
                     ->get();
     }
 
@@ -254,18 +255,17 @@ class Site extends Model
     {
         return $this->routes()
                     ->where('http_code', 'not like', '2__')
-                    ->where('http_code', 'not like', '3__')
-                    ->get();
+                    ->where('http_code', 'not like', '3__');
     }
 
     public function hasBrokenLinks()
     {
-        return $this->broken_links->isNotEmpty();
+        return $this->broken_links->get()->isNotEmpty();
     }
 
     public function brokenLinksStatus()
     {
-        return $this->broken_links->isEmpty() ? State::SUCCESS : State::ERROR;
+        return $this->broken_links->get()->isEmpty() ? State::SUCCESS : State::ERROR;
     }
 
     public function getDirReportsAttribute()

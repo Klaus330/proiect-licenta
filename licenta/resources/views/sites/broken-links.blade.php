@@ -5,7 +5,7 @@
       
         <section class="p-5 bg-white rounded">
             <div class="flex items-center justify-between">
-                <p class="font-bold">We found some internal broken links</p>   
+                <p class="font-bold">We {{$bokenLinksCount}} internal broken links</p>   
                 <a href="{{ route('site.download-broken-links', ['site' => $site]) }}" class="text-white bg-purple-600 py-2 px-3 text-xs rounded text-center hover:bg-purple-800">
                     <i class="fas fa-download"></i> Download broken links .csv report
                 </a>
@@ -33,6 +33,8 @@
                     @endforelse
                 </tbody>
             </table>
+
+            {{ $brokenLinks->links() }}
         </section>
     @else
         <section class="p-3 bg-white rounded">

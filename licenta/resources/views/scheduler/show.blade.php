@@ -33,7 +33,7 @@
                             </p>
                         </div>
                     </div>
-                    <div x-show="show" class="py-4 px-2 rounded">
+                    <div x-show="show" class="py-4 px-2 rounded" style="display: none;">
                         <p>Headers:</p>
                         <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
                             @forelse($statistics->headers as $headerName => $header)

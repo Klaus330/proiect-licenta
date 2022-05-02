@@ -9,3 +9,4 @@ Route::patch('site/{site}/settings', [SettingsController::class, 'updateGeneral'
 Route::get('site/{site}/settings/ssl', [SettingsController::class, 'sslCertificate'])->name('settings.ssl-certificate');
 Route::get('site/{site}/settings/uptime', [SettingsController::class, 'uptime'])->name('settings.uptime');
 Route::get('site/{site}/settings', [SettingsController::class, 'index'])->name('settings.index');
+Route::put('site/{site}/settings/uptime', [SettingsController::class, 'updateUptime'])->name('update.uptime.settings');

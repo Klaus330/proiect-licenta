@@ -115,7 +115,8 @@ class TriggerScheduler extends Command
                 $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
                 $scheduler->update(['next_run' => $this->nextRunDate]);
 
-                if ($this->isErrorStatusCode($lastStatusCode)) {
+                if ($this->isErrorStatusCode($lastStatusCode) && $scheduler->canSendNotification()) {
+                    $scheduler->update(['emailed_at' => now()]);
                     $scheduler
                         ->owner()
                         ->notify(

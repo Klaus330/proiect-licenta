@@ -63,19 +63,21 @@ class SiteController extends Controller
     public function brokenLinks(Site $site)
     {
         $routes = $site->routes()->where('http_code', 'like', '2__')->paginate(15);
-        $brokenLinks = $site->broken_links;
-
+        $brokenLinks = $site->broken_links->paginate(10);
+        $bokenLinksCount = 0;
         if(count($brokenLinks) > 0){
+            $links = $site->broken_links->get();
             File::put($site->dir_reports.'broken_links.csv', '');
             $csv = Writer::createFromPath($site->dir_reports.'broken_links.csv', 'w+');
             $csv->insertOne(['Status', 'URL', 'Found on']);
             
-            foreach ($brokenLinks as $brokenLink) {
+            foreach ($links as $brokenLink) {
                 $csv->insertOne([$brokenLink->http_code, $brokenLink->route, $site->url]);
             }
+            $bokenLinksCount = $links->count();
         }
         $site->loadCount('routes');
-        return view('sites.broken-links', compact('site', 'brokenLinks', 'routes'));
+        return view('sites.broken-links', compact('site', 'brokenLinks', 'routes', 'bokenLinksCount'));
     }
 
     public function downloadBrokenLinks(Site $site)

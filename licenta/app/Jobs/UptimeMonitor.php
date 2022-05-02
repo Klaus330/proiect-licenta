@@ -187,9 +187,9 @@ class UptimeMonitor implements ShouldQueue
         if (empty($this->site->headers)) {
             return false;
         }
-        dd($this->site->headers);
-        dd($response->getHeaders());
-        dd(array_diff($this->site->headers, $response->getHeaders()));
+        // dd($this->site->headers);
+        // dd($response->getHeaders());
+        // dd(array_diff($this->site->headers, $response->getHeaders()));
     }
 
     protected function isSiteRecovered(ResponseInterface $response): bool
@@ -231,7 +231,7 @@ class UptimeMonitor implements ShouldQueue
         
         if($this->verifyHeadersOnResponse($response)){
             info('Headers failed');
-            dd('hit');
+            // dd('hit');
             // $this->site->update(["emailed_at" => now()->toDateTime()]);
             // $this->sendNotification(new MalformedUptimeResponse($this->site, $response->getBody()));
             return;

@@ -37,6 +37,7 @@ class SchedulersWatcher implements ShouldQueue
         $nextRun = new \Carbon\Carbon((new CronExpression("* * * * *"))->getNextRunDate(now()));
 
         $schedulers = Scheduler::where("next_run", $nextRun->subMinute())
+                    ->orWhere->lastStatsIsOverdue()
                     ->orWhereDoesntHave("stats")
                     ->get();
 
