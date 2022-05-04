@@ -20,8 +20,8 @@
         </div>
         <div>
             @forelse($stats as $statistics)
-                <div x-data="{ show: false }" class="{{ $statistics->successful() ? 'bg-green-600' : 'bg-red-600' }} p-2 my-2 rounded text-white cursor-pointer" @click="show= !show">
-                    <div class="flex w-full justify-between items-center">
+                <div x-data="{ show: false }" class="{{ $statistics->successful() ? 'bg-green-600' : 'bg-red-600' }} p-2 my-2 rounded text-white cursor-pointer"  @click.away="show = false">
+                    <div class="flex w-full justify-between items-center" @click="show = !show">
                         <p>Started at: {{ $statistics->executed_at->toDayDateTimeString() }}</p>
                         <div class="flex gap-2">
                             <p>
