@@ -40,13 +40,13 @@
                         <div class="pr-1 flex-1 grid-cols-12 gap-0.5 flex">
                             @for ($i = 30; $i > 0; $i--)
                                 @if (!isset($latestStats[$i]))
-                                    <div class="w-full h-full bg-gray-200" title="No checks performed"></div>
+                                    <div class="w-full h-full bg-gray-200" title="No checks performed" data-tippy-content="No checks performed"></div>
                                 @elseif($latestStats[$i]->successful())
                                     <div class="w-full h-full bg-green-300"
-                                        title="{{ $latestStats[$i]->created_at->toFormattedDateString() }}"></div>
+                                        title="{{ $latestStats[$i]->created_at->toFormattedDateString() }}" data-tippy-content="{{ $latestStats[$i]->created_at->toFormattedDateString() }}"></div>
                                 @else
                                     <div class="w-full h-full bg-red-300"
-                                        title="{{ $latestStats[$i]->created_at->toFormattedDateString() }}"></div>
+                                        title="{{ $latestStats[$i]->created_at->toFormattedDateString() }}" data-tippy-content="{{ $latestStats[$i]->created_at->toFormattedDateString() }}"></div>
                                 @endif
                             @endfor
                         </div>
@@ -54,7 +54,8 @@
                             <div
                                 class="flex items-center justify-center rounded-br {{ $latestStats[0]->successful() ? 'bg-green-300' : 'bg-red-300' }}">
                                 <span class="text-xs p-0.5 px-1.5"
-                                    title="{{ $latestStats[0]->created_at->toFormattedDateString() }}">{{ $latestStats[0]->successful() ? 'Healthy' : 'Down' }}</span>
+                                    title="{{ $latestStats[0]->created_at->toFormattedDateString() }}" 
+                                    data-tippy-content="{{ $latestStats[0]->created_at->toFormattedDateString() }}">{{ $latestStats[0]->successful() ? 'Healthy' : 'Down' }}</span>
                             </div>
                         @else
                             <div
