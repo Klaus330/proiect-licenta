@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use League\Csv\Writer;
 use File;
+use Illuminate\Support\Facades\DB;
 
 class PerformanceChart extends Component
 {
@@ -52,17 +53,17 @@ class PerformanceChart extends Component
 
     public function getHourlyStats()
     {
-        return $this->statsFor(now()->subHour())->get();
+        return $this->statsFor(now()->subHour())->where('created_at', '<', now()->addDay())->get()->reverse()->values();
     }
 
     public function getDailyStats()
     {
-        return $this->statsFor(now()->subDay())->where('created_at', '<', now()->addDay())->get();
+        return $this->statsFor(now()->subDay())->where('created_at', '<', now()->addDay())->get()->reverse()->values();
     }
 
     public function getWeeklyStats()
     {
-        return $this->statsFor(now()->subWeek())->get();
+        return $this->statsFor(now()->subWeek())->where('created_at', '<', now()->addWeek())->exactHour()->get()->reverse()->values();
     }
 
     public function statsFor($condition)
@@ -81,16 +82,10 @@ class PerformanceChart extends Component
             case 'daily':
                 $this->stats = $this->getDailyStats()->filter(function($item){
                     return $item->created_at->minute === 0;
-                })->values()->reverse();
+                });
                 break;
             case 'weekly':
-                $this->stats = $this->getWeeklyStats()->groupBy(function($item) {
-                                    return $item->created_at->format('d'); // grouping by day
-                                })->map(function($collection){
-                                    return $collection->filter(function($item){
-                                        return $item->created_at->minute === 0;
-                                    })->values();
-                                })->flatten()->values();
+                $this->stats = $this->getWeeklyStats();
                 break;
         }
 
@@ -103,10 +98,6 @@ class PerformanceChart extends Component
         switch($this->interval){
             case 'hourly':
                 $created_at = $this->stats->pluck('created_at')->toArray();
-                $created_at = array_values(array_filter($created_at, function($created_at) {
-                    return $created_at->minute  % 2 == 0;
-                }));
-
                 $created_at = array_map(function($created_at) {
                     return $created_at->format("H:i");
                 }, $created_at);
@@ -122,7 +113,7 @@ class PerformanceChart extends Component
 
             case 'weekly':
                 return $this->stats->map(function($item){
-                                        return $item->created_at->format('D');
+                                        return $item->created_at->format('D h:i');
                                     })->toArray();
                 break;
         }

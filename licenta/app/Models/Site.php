@@ -124,6 +124,11 @@ class Site extends Model
       return $this->hasMany(SiteStats::class, "site_id")->latest();
     }
 
+    public function getLatestStatsAttribute()
+    {
+        return $this->stats()->where('created_at', '>=', now()->subDay())->get();
+    }
+
     public function isSecured()
     {
         return strtolower($this->schema) === self::SECURE_HTTP;
@@ -276,7 +281,7 @@ class Site extends Model
 
     public function getAveragePerformanceAttribute() : int
     {
-        $stats = $this->stats->take(30);
+        $stats = $this->latest_stats->take(30);
 
         return (int) ($stats->reduce(function($carry, $item){
             return $carry + $item->duration;

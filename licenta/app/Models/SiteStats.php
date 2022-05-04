@@ -77,4 +77,9 @@ class SiteStats extends Model
   {
     return preg_match("/2\d{2}/", $this->http_code);
   }
+
+  public function scopeExactHour($query)
+  {
+    $query->whereRaw("DATE_FORMAT(created_at,'%i') = '00'");
+  }
 }

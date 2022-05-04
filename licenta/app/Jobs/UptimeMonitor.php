@@ -34,14 +34,15 @@ class UptimeMonitor implements ShouldQueue
     protected const BAD_HOST_PROVIDED_CODE_ERROR = 404;
 
     public $tries = 3;
-    public $backoff = 1;
+    public $backoff = 2;
     public $maxException = 2;
     public $failOnTimeout = true;
-    public $timeout = 2;
+    // public $timeout = 2;
 
     protected Site $site;
     protected SiteStatsRepository $statsRepo;
     protected $schedule;
+    protected $latestStats;
 
     /**
      * Create a new job instance.
@@ -62,6 +63,7 @@ class UptimeMonitor implements ShouldQueue
      */
     public function handle()
     {
+        $this->latestStats = $this->site->latest_stats;
         $startedAt = new \DateTime();
         $start = microtime(true);
 
@@ -204,7 +206,7 @@ class UptimeMonitor implements ShouldQueue
 
     protected function isChangeInPerformance(): bool
     {
-        $latestStats = $this->site->stats()->get();
+        $latestStats = $this->latestStats;
      
         if($latestStats->count() < 2)
         {
@@ -218,7 +220,7 @@ class UptimeMonitor implements ShouldQueue
 
     protected function isSiteTooSlow()
     {
-        $latestStats = $this->site->stats->last();
+        $latestStats = $this->latestStats->last();
         return $latestStats->duration > self::LOW_PERFORMANCE_LIMIT;
     }
 
