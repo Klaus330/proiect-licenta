@@ -32,10 +32,11 @@ class SslCertificateWatcher implements ShouldQueue
      */
     public function handle()
     {
-        $sites = Site::whereDoesntHave('sslCertificate')
-                    ->get()
-                    ->each(function($site){
-                        Artisan::queue('ssl:check', ['site' => $site->id]);
-                    });
+        Site::sslOutdated()
+                ->orWhereDoesntHave('sslCertificate')
+                ->get()
+                ->each(function($site){
+                    Artisan::queue('ssl:check', ['site' => $site->id])->onQueue('ssl');
+                });
     }
 }

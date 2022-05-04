@@ -287,4 +287,9 @@ class Site extends Model
             return $carry + $item->duration;
         }) / count($stats));
     }
+
+    public function scopeSslOutdated($query)
+    {
+      $query->whereRaw('DATE_ADD((SELECT ssl_certificates.updated_at FROM ssl_certificates WHERE sites.id = ssl_certificates.site_id), INTERVAL 1 DAY) <= CURRENT_DATE');
+    }
 }

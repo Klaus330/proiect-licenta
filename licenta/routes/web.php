@@ -2,8 +2,6 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SiteController;
-use App\Models\Site;
-use App\Repositories\SiteStatsRepository;
 use Illuminate\Support\Facades\Route;
 
 /*
