@@ -58,7 +58,7 @@ class SslCertificateCheckCommand extends Command
         $site = Site::find(["id" => $siteId])->first();
 
         $this->info("Check if webiste is up");
-        $responseStatus = Http::get($site->getHost());
+        $responseStatus = Http::withOptions(["verify"=>false])->get($site->getHost());
 
         if (!$responseStatus->successful()) {
             $this->error("Http request failed. Code:" . $responseStatus);

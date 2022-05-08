@@ -203,7 +203,7 @@ class Site extends Model
 
     public function getLastMonthMonitoringInfo()
     {
-        $latestStats = $this->stats->groupBy(function($item) {
+        $latestStats = $this->stats->where('http_code','not like', '3__')->groupBy(function($item) {
             return $item->created_at->format('d');
         })->map(function($collection){
             return $collection->first();

@@ -159,7 +159,8 @@ class TriggerScheduler extends Command
                 ];
             },
             'allow_redirects' => true,
-            'http_errors' => true
+            'http_errors' => true,
+            'verify' => false,
         ]);
 
         return [$response, $statsAttributes];

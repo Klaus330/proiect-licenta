@@ -43,7 +43,7 @@ class CrawlSite implements ShouldQueue
         $site = $this->site;
         $this->alreadyCreatedRoutesArray = $this->site->routes_array;
         
-        $response = Http::get($site->url);
+        $response = Http::withOptions(["verify"=>false])->get($site->url);
         $links = $this->fetchAllRelatedLinks($response->body(), $site);
         $this->links = array_merge($this->links, $links);
         $foundOn = $site->url;
@@ -59,7 +59,7 @@ class CrawlSite implements ShouldQueue
             return;
         }
 
-        $response = Http::get($url);
+        $response = Http::withOptions(["verify"=>false])->get($url);
         $this->registerUrl($response, $foundOn, $url, $site);
         $foundOn = $url;
         $links = $this->fetchAllRelatedLinks($response->body(), $site);

@@ -126,7 +126,14 @@ class UptimeMonitor implements ShouldQueue
                 //   Create stats
                 $this->statsRepo->create($attributes);
             },
-            RequestOptions::ALLOW_REDIRECTS => true,
+            RequestOptions::ALLOW_REDIRECTS =>  [
+                'max'             => 10,    
+                'strict'          => true, 
+                'referer'         => true,
+                'protocols'       => ['https', 'http'], 
+                'track_redirects' => true
+            ],
+            RequestOptions::VERIFY => false,
         ]);
 
         $this->performChecks($response);
