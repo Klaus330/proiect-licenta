@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class WebsiteIsSlow extends Notification
+class WebsiteIsSlow extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -31,7 +31,7 @@ class WebsiteIsSlow extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -58,7 +58,8 @@ class WebsiteIsSlow extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'Your website seems to be too slow.',
+            'link' => url(route('sites.performance', ['site' => $this->site->id])),
         ];
     }
 }

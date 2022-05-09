@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ChangeInPerformance extends Notification
+class ChangeInPerformance extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -39,7 +39,7 @@ class ChangeInPerformance extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -69,7 +69,8 @@ class ChangeInPerformance extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'Your site seems to have some performance issue.',
+            'link' => url(route('sites.performance', $this->site->id)),
         ];
     }
 }

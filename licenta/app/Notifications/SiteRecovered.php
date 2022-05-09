@@ -8,7 +8,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SiteRecovered extends Notification
+class SiteRecovered extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -32,7 +32,7 @@ class SiteRecovered extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -59,7 +59,8 @@ class SiteRecovered extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "The {$this->site->name} is up again.",
+            'link' => url(route('sites.show', $this->site->id)),
         ];
     }
 }

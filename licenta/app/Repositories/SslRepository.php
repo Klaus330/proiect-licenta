@@ -15,4 +15,9 @@ class SslRepository
     {   
         return $this->model->create($attributes);
     }
+
+    public function update($id, $attributes)
+    {
+        return $this->model->find($id)->update($attributes);
+    }
 }

@@ -16,7 +16,6 @@ class CreateSitesTable extends Migration
         Schema::create('sites', function (Blueprint $table) {
             $table->id();
             $table->string("url");
-            $table->boolean("ssl")->default(false);
             $table->string("status")->default("pending");
             $table->unsignedBigInteger("user_id");
             $table->foreign("user_id")->references("id")->on("users");

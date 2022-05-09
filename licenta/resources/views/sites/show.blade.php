@@ -3,7 +3,7 @@
 @php
 $isUp = $site->isUp();
 $isPending = $site->isPending();
-$stats = $site->stats->last();
+$stats = $site->stats->first();
 @endphp
 
 @section('dashboard-content')

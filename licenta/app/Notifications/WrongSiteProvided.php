@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class WrongSiteProvided extends Notification
+class WrongSiteProvided extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -31,7 +31,7 @@ class WrongSiteProvided extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -57,7 +57,8 @@ class WrongSiteProvided extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'We could not access your host.',
+            'link' => url(route('sites.index')),
         ];
     }
 }

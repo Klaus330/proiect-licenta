@@ -19,7 +19,6 @@ class Site extends Model
     public $fillable = [
         "url",
         "user_id",
-        "ssl",
         "status",
         "next_run",
         "emailed_at",
@@ -38,7 +37,7 @@ class Site extends Model
     ];
 
 
-    public function getStatus()
+    public function getStatus() : State
     {   
         if($this->status === self::PENDING_STATE)
         {
@@ -63,7 +62,7 @@ class Site extends Model
         return $this->hasMany(Scheduler::class);
     }
 
-    public function hasSchedulers()
+    public function hasSchedulers() : State
     {
         return $this->schedulers()->count() > 0 ? State::SUCCESS : State::ERROR;
     }
@@ -94,7 +93,7 @@ class Site extends Model
       return $this->status === self::PENDING_STATE;
     }
 
-    public function getSslCertificateStatus()
+    public function getSslCertificateStatus() : State
     {
         if (!$this->hasSslCertificate()) {
             return State::PENDING;
@@ -123,6 +122,11 @@ class Site extends Model
     public function stats()
     {
       return $this->hasMany(SiteStats::class, "site_id")->latest();
+    }
+
+    public function getLatestStatsAttribute()
+    {
+        return $this->stats()->where('created_at', '>=', now()->subDay())->get();
     }
 
     public function isSecured()
@@ -178,12 +182,12 @@ class Site extends Model
 
     public function validateResponse($responseBody)
     {
-      return $this->check === $responseBody;
+      return preg_match("/{$this->check}/", $responseBody);
     }
     
     public function allowedToSendEmail()
     {
-      return now()->diffInHours($this->emailed_at) > 1;
+      return $this->emailed_at === null || now()->diffInHours($this->emailed_at) > 1;
     }
 
     public function hasTimeout()
@@ -199,7 +203,7 @@ class Site extends Model
 
     public function getLastMonthMonitoringInfo()
     {
-        $latestStats = $this->stats->groupBy(function($item) {
+        $latestStats = $this->stats->where('http_code','not like', '3__')->groupBy(function($item) {
             return $item->created_at->format('d');
         })->map(function($collection){
             return $collection->first();
@@ -217,7 +221,7 @@ class Site extends Model
             $latestStats[0] = $latestStats[1];
         }
 
-        return $latestStats;
+        return collect($latestStats);
     }
 
     public function getLastIncidentsAttribute()
@@ -225,6 +229,7 @@ class Site extends Model
         return $this->stats()
                     ->where('http_code', 'not like', '2__')
                     ->where('http_code', 'not like', '3__')
+                    ->take(10)
                     ->get();
     }
 
@@ -236,5 +241,55 @@ class Site extends Model
         }
 
         return $this->last_incidents[0];
+    }
+
+    public function routes()
+    {
+        return $this->hasMany(SiteRoute::class);
+    }
+
+    public function getRoutesArrayAttribute()
+    {
+        return array_map(function($el) {
+            return $el['route'];
+        }, $this->routes()->select('route')->get()->toArray());
+    }
+    
+    
+    public function getBrokenLinksAttribute()
+    {
+        return $this->routes()
+                    ->where('http_code', 'not like', '2__')
+                    ->where('http_code', 'not like', '3__');
+    }
+
+    public function hasBrokenLinks()
+    {
+        return $this->broken_links->get()->isNotEmpty();
+    }
+
+    public function brokenLinksStatus()
+    {
+        return $this->broken_links->get()->isEmpty() ? State::SUCCESS : State::ERROR;
+    }
+
+    public function getDirReportsAttribute()
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . '/reports/' . $this->id . '/';
+    }
+    
+
+    public function getAveragePerformanceAttribute() : int
+    {
+        $stats = $this->latest_stats->take(30);
+
+        return (int) ($stats->reduce(function($carry, $item){
+            return $carry + $item->duration;
+        }) / count($stats));
+    }
+
+    public function scopeSslOutdated($query)
+    {
+      $query->whereRaw('DATE_ADD((SELECT ssl_certificates.updated_at FROM ssl_certificates WHERE sites.id = ssl_certificates.site_id), INTERVAL 1 DAY) <= CURRENT_DATE');
     }
 }

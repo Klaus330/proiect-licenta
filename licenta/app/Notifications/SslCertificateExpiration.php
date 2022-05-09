@@ -8,7 +8,7 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use App\Models\Site;
 
-class SslCertificateExpiration extends Notification
+class SslCertificateExpiration extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -31,7 +31,7 @@ class SslCertificateExpiration extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     /**
@@ -58,7 +58,8 @@ class SslCertificateExpiration extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => "The ssl certificate for {$this->site->name} is about to expire.",
+            'link' => url(route('site.ssl-certificate-health', ['site' => $this->site->id])),
         ];
     }
 }

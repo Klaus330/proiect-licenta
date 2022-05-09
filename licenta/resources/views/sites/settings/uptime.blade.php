@@ -41,17 +41,17 @@
                     </div>
 
 
-                    <div class="grid grid-cols-1 w-full flex items-start my-5 md:grid-cols-5 flex items-start">
+                    {{-- <div class="grid grid-cols-1 w-full flex items-start my-5 md:grid-cols-5 flex items-start">
                         <h4 class="mb-2 font-semibold text-lg col-span-1">Payload</h4>
-                        {{-- <multiple-fields-creator
+                        <multiple-fields-creator
                             action-message="Add payload field"
                             action-description="We'll send this form data along with the uptime check for all non-GET requests."
                             class="col-span-1 md:col-span-4"
                             :data="{{json_encode($site->payload)}}"
-                        ></multiple-fields-creator> --}}
-                    </div>
+                        ></multiple-fields-creator> 
+                    </div> --}}
 
-                    <div class="w-full flex items-start my-5 grid grid-cols-1  md:grid-cols-5">
+                    {{-- <div class="w-full flex items-start my-5 grid grid-cols-1  md:grid-cols-5">
                         <label class="w-full p-1 col-label-1" for="timeout">Timeout in seconds</label>
                         <div class="mt-1 relative rounded-md shadow-sm col-span-1 md:col-span-2 ">
                             <div class="relative">
@@ -70,7 +70,7 @@
                                 as failed.
                             </p>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
 
                 <div class="flex items-start justify-end">

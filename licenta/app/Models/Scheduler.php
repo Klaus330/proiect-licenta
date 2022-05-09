@@ -17,6 +17,7 @@ class Scheduler extends Model
 
     public const TYPE_CRON_EXPRESSION = 'cron';
     public const TYPE_INTERVAL = 'interval';
+    protected const OVERDUE_LIMIT = '5';
 
     protected $fillable = [
       "name",
@@ -27,8 +28,11 @@ class Scheduler extends Model
       "cronExpression",
       "next_run",
       "period",
-      'site_id'
+      'site_id',
+      'emailed_at',
     ];
+
+    public $timestamps = [ 'emailed_at' ];
   
     public function host()
     {
@@ -89,5 +93,16 @@ class Scheduler extends Model
     public function isOwner($user)
     {
       return $user->id === $this->owner->id;
+    }
+
+    public function canSendNotification()
+    {
+      return $this->emailed_at != null && $this->emailed_at->dffInMinutes() > 30;
+    }
+
+    public function scopeLastStatsIsOverdue($query) // TODO: Refactor this to match any cron expression
+    {
+      $limit = self::OVERDUE_LIMIT;
+      $query->whereRaw("DATE_SUB(next_run, INTERVAL {$limit} MINUTE) > (SELECT ended_at from scheduler_stats where scheduler_id = schedulers.id order by ended_at limit 1)");
     }
 }

@@ -8,6 +8,7 @@ use App\Repositories\SiteRepository;
 use App\Models\Site;
 use App\Rules\ValidWebsite;
 use Illuminate\Support\Facades\Artisan;
+use App\Notifications\UptimeMonitorRegistered;
 
 class AddNewSiteForm extends Component
 {
@@ -26,15 +27,23 @@ class AddNewSiteForm extends Component
 
         try {
             $site = $siteRepository->createOrFail($data);
+            
+            if(! is_dir($site->dir_reports)){
+                mkdir($site->dir_reports);
+            }
+
             // Dispatch Site created event
             $this->emit('siteCreated');
             
             // Check the ssl certificate
             Artisan::queue("ssl:check", ["site" => $site->id]);
 
+            // Dispatch Crawler Job
+            dispatch(new \App\Jobs\CrawlSite($site))->onQueue('crawlers');
+
             // Notify the user
             // $when = now()->addMinutes(15);
-            // auth()->user()->notify((new UptimeMonitorRegistered())->delay($when));
+            $site->owner->notify((new UptimeMonitorRegistered($site))->delay(now()->addSeconds(5)));
 
         } catch (SiteDuplication $e) {
             $this->addError('url', $e->getMessage());

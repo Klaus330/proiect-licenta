@@ -6,19 +6,21 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use App\Models\Site;
 
-class UptimeMonitorRegistered extends Notification
+class UptimeMonitorRegistered extends Notification implements ShouldQueue
 {
     use Queueable;
 
+    protected Site $site;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Site $site)
     {
-        //
+        $this->site = $site;
     }
 
     /**
@@ -29,7 +31,7 @@ class UptimeMonitorRegistered extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['database', 'mail'];
     }
 
     /**
@@ -58,7 +60,8 @@ class UptimeMonitorRegistered extends Notification
     public function toArray($notifiable)
     {
         return [
-            //
+            'message' => 'Your uptime monitor has been successfully registered.',
+            'link' => url(route('sites.show', $this->site->id)),
         ];
     }
 }

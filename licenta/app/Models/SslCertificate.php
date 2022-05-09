@@ -26,7 +26,9 @@ class SslCertificate extends Model
       "validTo",
       "validFrom",
       "signatureTypeNID",
-      'expires'
+      'expires',
+      'ipAddress',
+      'updated_at',
     ];
     
     protected $dates = ['validTo', 'validFrom'];
@@ -34,7 +36,6 @@ class SslCertificate extends Model
     protected $casts = [
       "extensions" => "array",
       "purposes" => "array",
-      "issuer" => "array",
     ];
   
     public function site()
@@ -45,5 +46,15 @@ class SslCertificate extends Model
     public function scopeAboutToExpire(Builder $query)
     {
       $query->whereRaw('validTo <= ADDDATE(NOW(), INTERVAL expires DAY)');
+    }
+
+    public function getavoidsSha1HashAttribute()
+    {
+      return $this->signatureTypeLN !== 'sha1WithRSAEncryption';
+    }
+
+    public function hasExpired()
+    {
+      return $this->validTo->isPast();
     }
 }

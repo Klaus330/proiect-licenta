@@ -2,14 +2,14 @@
 
 namespace App\Jobs;
 
-use App\Models\SslCertificate;
-use App\Notifications\SslCertificateExpiration;
+use App\Models\Site;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Artisan;
 
 class SslCertificateWatcher implements ShouldQueue
 {
@@ -32,13 +32,11 @@ class SslCertificateWatcher implements ShouldQueue
      */
     public function handle()
     {
-        $certificates = SslCertificate::aboutToExpire()->get();
-        
-        foreach($certificates as $certificate)
-        {
-            $certificate->site->owner->notify(
-                (new SslCertificateExpiration($certificate->site))->delay(now()->addSeconds(10))
-            );
-        }
+        Site::sslOutdated()
+                ->orWhereDoesntHave('sslCertificate')
+                ->get()
+                ->each(function($site){
+                    Artisan::queue('ssl:check', ['site' => $site->id])->onQueue('ssl');
+                });
     }
 }

@@ -27,9 +27,10 @@ class CreateSslCertificatesTable extends Migration
             $table->string('subject');
             $table->string("name");
             $table->text('issuer');
-            $table->date('validTo');
-            $table->date('validFrom');
+            $table->datetime('validTo');
+            $table->datetime('validFrom');
             $table->string('signatureTypeNID');
+            $table->string('ipAddress')->nullable();
             $table->integer("expires")->default(10);
             $table->timestamps();
         });

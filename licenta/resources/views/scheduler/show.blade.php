@@ -10,7 +10,7 @@
                     {{ $scheduler->endpoint === "" ? '/' : $scheduler->endpoint }}
                 </p>
                 <p>
-                    @livewire('status-bubble', ['status' => $scheduler->getStatus()])
+                    @livewire('status-bubble', ['status' => $scheduler->getStatus()->label()])
                 </p>
                 <p>
                     <i class="fa-solid fa-repeat mr-1"></i>
@@ -20,8 +20,8 @@
         </div>
         <div>
             @forelse($stats as $statistics)
-                <div x-data="{ show: false }" class="{{ $statistics->successful() ? 'bg-green-600' : 'bg-red-600' }} p-2 my-2 rounded text-white cursor-pointer" @click="show= !show">
-                    <div class="flex w-full justify-between items-center">
+                <div x-data="{ show: false }" class="{{ $statistics->successful() ? 'bg-green-600' : 'bg-red-600' }} p-2 my-2 rounded text-white cursor-pointer"  @click.away="show = false">
+                    <div class="flex w-full justify-between items-center" @click="show = !show">
                         <p>Started at: {{ $statistics->executed_at->toDayDateTimeString() }}</p>
                         <div class="flex gap-2">
                             <p>
@@ -33,7 +33,7 @@
                             </p>
                         </div>
                     </div>
-                    <div x-show="show" class="py-4 px-2 rounded">
+                    <div x-show="show" class="py-4 px-2 rounded" style="display: none;">
                         <p>Headers:</p>
                         <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
                             @forelse($statistics->headers as $headerName => $header)

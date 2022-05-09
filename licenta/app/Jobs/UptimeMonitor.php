@@ -34,14 +34,15 @@ class UptimeMonitor implements ShouldQueue
     protected const BAD_HOST_PROVIDED_CODE_ERROR = 404;
 
     public $tries = 3;
-    public $backoff = 1;
+    public $backoff = 2;
     public $maxException = 2;
     public $failOnTimeout = true;
-    public $timeout = 2;
+    // public $timeout = 2;
 
     protected Site $site;
     protected SiteStatsRepository $statsRepo;
     protected $schedule;
+    protected $latestStats;
 
     /**
      * Create a new job instance.
@@ -62,6 +63,7 @@ class UptimeMonitor implements ShouldQueue
      */
     public function handle()
     {
+        $this->latestStats = $this->site->latest_stats;
         $startedAt = new \DateTime();
         $start = microtime(true);
 
@@ -88,7 +90,7 @@ class UptimeMonitor implements ShouldQueue
 
                 $attributes = [
                     "site_id" => $this->site->id,
-                    "dns_lookup" => $stats->getHandlerStat("namelookup_time"),
+                    "dns_lookup" => $stats->getHandlerStat("namelookup_time_us"),
                     "total_time" => $stats->getHandlerStat("total_time_us"),
                     "connect_time" => $stats->getHandlerStat("connect_time_us"),
                     "speed_download" => $stats->getHandlerStat("speed_download"),
@@ -99,11 +101,12 @@ class UptimeMonitor implements ShouldQueue
                     "content_length" => $stats->getHandlerStat("download_content_length"),
                     "primary_port" => $stats->getHandlerStat("primary_port"),
                     "appconnect_time" => $stats->getHandlerStat("appconnect_time"),
-                    "start_transfer_time" => $stats->getHandlerStat("starttransfer_time"),
+                    "start_transfer_time" => $stats->getHandlerStat("starttransfer_time_us"),
                     "http_code" => $stats->getHandlerStat("http_code"),
                     "pretransfer_time" => $stats->getHandlerStat("pretransfer_time_us"),
                     "redirect_count" => $stats->getHandlerStat("redirect_count"),
-                    "redirect_time" => $stats->getHandlerStat("redirect_time"),
+                    "redirect_time" => $stats->getHandlerStat("redirect_time_us"),
+                    'connect_time' => $stats->getHandlerStat("connect_time_us"),
                     "server" => $response->getHeaderLine("Server"),
                     "date" => $response->getHeaderLine("Date"),
                     "connection" => $response->getHeaderLine("Connection"),
@@ -117,12 +120,20 @@ class UptimeMonitor implements ShouldQueue
                     "ended_at" => $endedAt,
                     "duration" => floatval($duration),
                     'body' => $response->getBody(),
+                    'primary_ip' => $stats->getHandlerStat("primary_ip"),
                   ];
 
                 //   Create stats
                 $this->statsRepo->create($attributes);
             },
-            RequestOptions::ALLOW_REDIRECTS => true,
+            RequestOptions::ALLOW_REDIRECTS =>  [
+                'max'             => 10,    
+                'strict'          => true, 
+                'referer'         => true,
+                'protocols'       => ['https', 'http'], 
+                'track_redirects' => true
+            ],
+            RequestOptions::VERIFY => false,
         ]);
 
         $this->performChecks($response);
@@ -152,7 +163,6 @@ class UptimeMonitor implements ShouldQueue
       {
         $attributes = $e->getExceptionData();
         $attributes['http_code'] = self::BAD_HOST_PROVIDED_CODE_ERROR;
-        dd($this->statsRepo->create($attributes));
 
         $next_run = $this->schedule->getNextRunDate(now());
         $this->site->update([
@@ -166,7 +176,7 @@ class UptimeMonitor implements ShouldQueue
         }
       }
 
-      dd($e);
+        dd($e);
     }
 
     protected function verifyTextOnResponse($response): bool
@@ -186,9 +196,9 @@ class UptimeMonitor implements ShouldQueue
         if (empty($this->site->headers)) {
             return false;
         }
-        dd($this->site->headers);
-        dd($response->getHeaders());
-        dd(array_diff($this->site->headers, $response->getHeaders()));
+        // dd($this->site->headers);
+        // dd($response->getHeaders());
+        // dd(array_diff($this->site->headers, $response->getHeaders()));
     }
 
     protected function isSiteRecovered(ResponseInterface $response): bool
@@ -203,7 +213,7 @@ class UptimeMonitor implements ShouldQueue
 
     protected function isChangeInPerformance(): bool
     {
-        $latestStats = $this->site->stats()->get();
+        $latestStats = $this->latestStats;
      
         if($latestStats->count() < 2)
         {
@@ -212,12 +222,12 @@ class UptimeMonitor implements ShouldQueue
 
         $current = $latestStats[0];
         $previous = $latestStats[1];
-        return $current->duration - $previous->duration > self::MODIFIED_PERFORMANCE_LIMIT;
+        return $current->duration  > $this->site->average_performance / 2 && $current->duration - $previous->duration > self::MODIFIED_PERFORMANCE_LIMIT;
     }
 
     protected function isSiteTooSlow()
     {
-        $latestStats = $this->site->stats->last();
+        $latestStats = $this->latestStats->last();
         return $latestStats->duration > self::LOW_PERFORMANCE_LIMIT;
     }
 
@@ -231,7 +241,7 @@ class UptimeMonitor implements ShouldQueue
         
         if($this->verifyHeadersOnResponse($response)){
             info('Headers failed');
-            dd('hit');
+            // dd('hit');
             // $this->site->update(["emailed_at" => now()->toDateTime()]);
             // $this->sendNotification(new MalformedUptimeResponse($this->site, $response->getBody()));
             return;
@@ -243,7 +253,8 @@ class UptimeMonitor implements ShouldQueue
             return;
         }
     
-        if ($this->isChangeInPerformance()) {
+        if ($this->isChangeInPerformance() && $this->site->allowedToSendEmail()) {
+            $this->site->update(["emailed_at" => now()->toDateTime()]);
             $when = now()->addMinute();
             $this->sendNotification((new ChangeInPerformance($this->site))->delay($when));
             return;

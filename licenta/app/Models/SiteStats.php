@@ -40,7 +40,8 @@ class SiteStats extends Model
     "started_at",
     "ended_at",
     "duration",
-    "body"
+    "body",
+    'primary_ip',
   ];
 
   protected $casts = [
@@ -75,5 +76,10 @@ class SiteStats extends Model
   public function successful()
   {
     return preg_match("/2\d{2}/", $this->http_code);
+  }
+
+  public function scopeExactHour($query)
+  {
+    $query->whereRaw("DATE_FORMAT(created_at,'%i') = '00'");
   }
 }
