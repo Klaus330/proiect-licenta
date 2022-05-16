@@ -2,6 +2,10 @@
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SiteController;
+use App\Jobs\CrawlersWatcher;
+use App\Lighthouse\LighthouseAuditor;
+use App\Models\Site;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 /*

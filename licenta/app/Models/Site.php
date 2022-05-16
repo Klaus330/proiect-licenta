@@ -292,4 +292,15 @@ class Site extends Model
     {
       $query->whereRaw('DATE_ADD((SELECT ssl_certificates.updated_at FROM ssl_certificates WHERE sites.id = ssl_certificates.site_id), INTERVAL 1 DAY) <= CURRENT_DATE');
     }
+
+    public function getDirLighthouseReportsAttribute()
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . '/lighthouse/' . $this->id . '/';
+
+    }
+
+    public function hasLighthouseReport()
+    {
+        return file_exists($this->dir_lighthouse_reports . 'report.html');
+    }
 }

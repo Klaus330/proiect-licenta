@@ -1,7 +1,7 @@
 @if ($stats->isNotEmpty())
     <section class="p-5 bg-white mt-4 rounded">
         <div class="flex justify-between px-3 items-center">
-            <h1 class="text-2xl font-semibold">Performance</h1>
+            <h2 class="text-2xl font-semibold">Performance</h2>
             <select name="interval" wire:model="interval" id="">
                 <option value="hourly">Hourly</option>
                 <option value="daily">Daily</option>

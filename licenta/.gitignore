@@ -2,6 +2,7 @@
 /public/hot
 /public/storage
 /public/reports
+/public/lighthouse
 /storage/*.key
 /vendor
 .env
