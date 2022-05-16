@@ -3,6 +3,7 @@
 namespace App\Console;
 
 use App\Jobs\CrawlersWatcher;
+use App\Jobs\LighthouseReportWatcher;
 use App\Jobs\SchedulersWatcher;
 use App\Jobs\SslCertificateExpirationWatcher;
 use App\Jobs\SslCertificateWatcher;
@@ -25,6 +26,7 @@ class Kernel extends ConsoleKernel
         $schedule->job(SslCertificateWatcher::class)->everyMinute();
         $schedule->job(SslCertificateExpirationWatcher::class)->daily();
         $schedule->job(CrawlersWatcher::class)->daily();
+        $schedule->job(LighthouseReportWatcher::class)->daily();
     }
 
     /**

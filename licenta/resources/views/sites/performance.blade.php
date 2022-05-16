@@ -10,4 +10,5 @@
 
 @section('dashboard-content')
         @livewire('performance-chart', ['site' => $site])
+        @include('sites.snippets.audit-report', ['site' => $site])
 @endsection
