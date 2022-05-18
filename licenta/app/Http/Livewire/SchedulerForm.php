@@ -12,7 +12,7 @@ class SchedulerForm extends Component
 {
     public Scheduler $scheduler;
     public Site $site;
-    public $schedulerType;
+    public $scheduleType;
     public $method;
     public $interval;
     public $cronExpressions;
@@ -23,7 +23,7 @@ class SchedulerForm extends Component
     public function mount(Scheduler $scheduler)
     {
         $this->scheduler = $scheduler;
-        $this->schedulerType = 'cron';
+        $this->scheduleType = Scheduler::TYPE_CRON_EXPRESSION;
         $this->interval = '60';
         $this->method = $scheduler->method ?? 'GET';
         $this->mode = 'new';
@@ -41,7 +41,7 @@ class SchedulerForm extends Component
         
         $cronExpression = $validatedData['scheduler']['cronExpression'];
 
-        if($this->schedulerType === Scheduler::TYPE_INTERVAL)
+        if($this->scheduleType === Scheduler::TYPE_INTERVAL)
         {
             $cronExpression = $this->cronExpressions[$this->interval];
         }
@@ -70,8 +70,8 @@ class SchedulerForm extends Component
             "scheduler.name" => "required",
             "scheduler.endpoint" => "required",
             "method" => "required",
-            "scheduler.cronExpression" => Rule::requiredIf($this->schedulerType === Scheduler::TYPE_CRON_EXPRESSION),
-            "interval" => [Rule::requiredIf($this->schedulerType === Scheduler::TYPE_INTERVAL)],
+            "scheduler.cronExpression" => Rule::requiredIf($this->scheduleType === Scheduler::TYPE_CRON_EXPRESSION),
+            "interval" => [Rule::requiredIf($this->scheduleType === Scheduler::TYPE_INTERVAL)],
         ];
     }
 

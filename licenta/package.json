@@ -23,6 +23,7 @@
     "dependencies": {
         "chart.js": "^3.7.1",
         "font-awesome": "^4.7.0",
+        "jsoneditor": "^9.7.4",
         "lighthouse": "^9.5.0"
     }
 }

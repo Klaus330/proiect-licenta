@@ -18,15 +18,15 @@
                     </div>
 
                     <div class="col-span-3 sm:col-span-3">
-                        <label for="schedulerType" class="block text-sm font-medium text-gray-700">Scheduler Type:</label>
-                        <select id="schedulerType" name="schedulerType" autocomplete="schedulerType" wire:model="schedulerType"
+                        <label for="scheduleType" class="block text-sm font-medium text-gray-700">Schedule Type:</label>
+                        <select id="scheduleType" name="scheduleType" autocomplete="scheduleType" wire:model="scheduleType"
                             class="mt-1 block w-full bg-white border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             <option value="cron">Cron</option>
                             <option value="interval">Interval</option>
                         </select>
                     </div>
 
-                    @switch($schedulerType)
+                    @switch($scheduleType)
                         @case('cron')
                             <div class="col-span-3 sm:col-span-3">
                                 <label for="cronExpression" class="block text-sm font-medium text-gray-700">Cron Expression:</label>
