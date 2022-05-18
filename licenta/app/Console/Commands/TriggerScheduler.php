@@ -24,7 +24,7 @@ class TriggerScheduler extends Command
      *
      * @var string
      */
-    protected $signature = 'scheduler';
+    protected $signature = 'scheduler {scheduler}';
 
     /**
      * The console command description.
@@ -58,8 +58,8 @@ class TriggerScheduler extends Command
         // TODO: REFACTOR USING EVENTS
         $this->info('Changing the next-run attribute');
 
-        // $scheduler = $this->argument('scheduler');
-        $scheduler = Scheduler::find(4);
+        $scheduler = $this->argument('scheduler');
+        $scheduler = Scheduler::find($scheduler);
 
         if(empty($scheduler))
         {
@@ -132,7 +132,6 @@ class TriggerScheduler extends Command
                 $scheduler->update(['next_run' => $this->nextRunDate]);
 
                 if ($this->isErrorStatusCode($lastStatusCode) && $scheduler->canSendNotification()) {
-                    $scheduler->update(['emailed_at' => now()]);
                     $scheduler
                         ->owner()
                         ->notify(
@@ -141,6 +140,7 @@ class TriggerScheduler extends Command
                                 $response
                             )
                         );
+                    $scheduler->update(['emailed_at' => now()]);
                 }
             }
 
@@ -219,7 +219,6 @@ class TriggerScheduler extends Command
             'json' => $scheduler->payload,
             'cookies' => $this->cookieJar ?? null,
             'headers' => $headers,
-            'debug' => true
         ]);
 
 
@@ -233,12 +232,12 @@ class TriggerScheduler extends Command
 
     public function authenticate($scheduler)
     {
-        // if($scheduler->jwt_expire_date != null && !$scheduler->isJWTTokenExpired()){
-        //     $this->jwtToken = $scheduler->jwt;
-        //     return;
-        // }
+        if($scheduler->jwt_expire_date != null && !$scheduler->isJWTTokenExpired()){
+            $this->jwtToken = $scheduler->jwt;
+            return;
+        }
 
-        $response = Http::post($scheduler->host->url . '/asdasd/' . $scheduler->auth_route, $scheduler->auth_payload);
+        $response = Http::post($scheduler->host->url . '/' . $scheduler->auth_route, $scheduler->auth_payload);
         
         if($response->successful())
         {

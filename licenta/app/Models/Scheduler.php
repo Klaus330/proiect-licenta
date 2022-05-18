@@ -42,7 +42,7 @@ class Scheduler extends Model
     public $casts = [
       'auth_payload' => 'array',
       'payload' => 'array',
-      'emailed_at' => 'date'
+      'emailed_at' => 'datetime',
     ]; 
 
     public $timestamps = [ 'emailed_at' ];
@@ -110,7 +110,7 @@ class Scheduler extends Model
 
     public function canSendNotification()
     {
-      return $this->emailed_at === null || ($this->emailed_at != null && $this->emailed_at->diffInMinutes(now()) > self::TIME_BETWEEN_EMAILS);
+      return $this->emailed_at === null || ($this->emailed_at != null && $this->emailed_at->diff(now())->i > self::TIME_BETWEEN_EMAILS);
     }
 
     public function scopeLastStatsIsOverdue($query) // TODO: Refactor this to match any cron expression
