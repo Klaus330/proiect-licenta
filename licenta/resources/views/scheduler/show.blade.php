@@ -1,4 +1,8 @@
 @extends("layouts.dashboard")
+@section('basic_head')
+<link rel="stylesheet"
+      href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/11.5.1/styles/default.min.css">
+@endsection
 
 @section('dashboard-content')
     <section class="p-5 bg-white rounded">       
@@ -48,7 +52,7 @@
                         <p>Body:</p>
                         <div class="overflow-auto bg-white text-black max-h-80 p-4">
                             <pre>
-                                <code>
+                                <code  class="json">
                                     {{ $statistics->response_body }}
                                 </code>
                             </pre>
@@ -62,4 +66,19 @@
             {{ $stats->links() }}
         </div>
     </section>
+@endsection
+
+@section('dashboard-script')
+    <script>
+      
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.querySelectorAll('pre code').forEach((el) => {
+                let codeStr = el.innerText.trim()
+          
+                
+                let html = hljs.highlightAuto(codeStr);
+                el.innerHTML = html.value;
+            });
+        });
+    </script>
 @endsection

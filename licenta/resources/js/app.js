@@ -18,8 +18,10 @@ window.notificationMenu = () => {
                 alert(response['error'])
             });
         }
-    }
+    }  
 }
 
 
 Alpine.start();
+
+window.hljs = require('highlight.js');
