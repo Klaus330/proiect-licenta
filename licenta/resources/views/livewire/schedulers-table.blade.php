@@ -25,7 +25,9 @@
                 @php
                     $cronExpression = new \Cron\CronExpression($scheduler->cronExpression);
                 @endphp
-                <tr class="border-b border-dashed border-gray-200 hover:bg-gray-200 cursor-pointer" x-data @click="window.location.href='{{ route('schedulers.show', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}'">
+                <tr class="border-b border-dashed border-gray-200 hover:bg-gray-200 cursor-pointer" 
+                    wire:key="{{$scheduler->id}}"
+                    x-data @click="window.location.href='{{ route('schedulers.show', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}'">
                     <td  class="py-3 whitespace-nowrap text-sm text-indigo-500 text-center font-semibold">
                         <a href="{{ route('schedulers.show', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}" class="hover:underline">{{ $scheduler->name }}</a>
                     </td>
@@ -54,6 +56,10 @@
                                         <i class="fas fa-trash"></i>
                                 </button>
                             </form>
+                            <a href="{{ route('schedulers.settings', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}" 
+                               class="bg-white-600 hover:bg-white-700 border border-gray-600 hover:border-gray-800 rounded p-2 text-gray-600 text-xs">
+                                <i class="fas fa-cog"></i>
+                            </a>
                         </div>
                     </td>
                 </tr>

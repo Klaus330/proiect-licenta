@@ -15,6 +15,7 @@ class Scheduler extends Model
     public const SUCCESS_STATUS = 200;
     public const PENDING_STATUS = null;
 
+    public const TIME_BETWEEN_EMAILS = 30;
     public const TYPE_CRON_EXPRESSION = 'cron';
     public const TYPE_INTERVAL = 'interval';
     protected const OVERDUE_LIMIT = '5';
@@ -30,7 +31,19 @@ class Scheduler extends Model
       "period",
       'site_id',
       'emailed_at',
+      'needs_auth',
+      'auth_payload',
+      'payload',
+      'auth_route',
+      'jwt',
+      'jwt_expire_date',
     ];
+
+    public $casts = [
+      'auth_payload' => 'array',
+      'payload' => 'array',
+      'emailed_at' => 'datetime',
+    ]; 
 
     public $timestamps = [ 'emailed_at' ];
   
@@ -97,12 +110,30 @@ class Scheduler extends Model
 
     public function canSendNotification()
     {
-      return $this->emailed_at != null && $this->emailed_at->dffInMinutes() > 30;
+      return $this->emailed_at === null || ($this->emailed_at != null && $this->emailed_at->diff(now())->i > self::TIME_BETWEEN_EMAILS);
     }
 
     public function scopeLastStatsIsOverdue($query) // TODO: Refactor this to match any cron expression
     {
       $limit = self::OVERDUE_LIMIT;
       $query->whereRaw("DATE_SUB(next_run, INTERVAL {$limit} MINUTE) > (SELECT ended_at from scheduler_stats where scheduler_id = schedulers.id order by ended_at limit 1)");
+    }
+
+    public function getAuthPayloadAttribute($value)
+    {
+      if(is_null($value)) {
+        return [];
+      }
+
+      return json_decode($value, TRUE);
+    }
+
+    public function isJWTTokenExpired()
+    {
+      if(is_null($this->jwt_expire_date)) {
+        return false;
+      }
+
+      return $this->jwt_expire_date < now();
     }
 }

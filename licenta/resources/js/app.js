@@ -2,6 +2,8 @@ require('./bootstrap');
 import Alpine from 'alpinejs';
 import axios from 'axios';
 
+require('jsoneditor')
+
 window.Alpine = Alpine;
 
 window.notificationMenu = () => {
@@ -16,8 +18,10 @@ window.notificationMenu = () => {
                 alert(response['error'])
             });
         }
-    }
+    }  
 }
 
 
 Alpine.start();
+
+window.hljs = require('highlight.js');

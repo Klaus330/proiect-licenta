@@ -2,28 +2,25 @@
 
 namespace App\Notifications;
 
-use App\Models\Scheduler;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class SchedulerFailed extends Notification implements ShouldQueue
+class SchedulerCouldNotAuthenticate extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    protected Scheduler $scheduler;
-    protected $response;
+    protected $scheduler;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(Scheduler $scheduler, $response)
+    public function __construct($scheduler)
     {
         $this->scheduler = $scheduler;
-        $this->response = $response;
     }
 
     /**
@@ -46,9 +43,8 @@ class SchedulerFailed extends Notification implements ShouldQueue
     public function toMail($notifiable)
     {
         return (new MailMessage)
-                    ->line("Your {$this->scheduler->name} scheduler has failed.")
-                    ->line("The status code was {$this->response->getStatusCode()}.")
-                    ->action('Notification Action', url('/'))
+                    ->line("Your {$this->scheduler->name} scheduler could not authenticate. Please make sure the authentication route is correct.")
+                    ->action('Notification Action', url(route('schedulers.index', ['site' => $this->scheduler->host->id])))
                     ->line('Thank you for using our application!');
     }
 
@@ -61,7 +57,7 @@ class SchedulerFailed extends Notification implements ShouldQueue
     public function toArray($notifiable)
     {
         return [
-            'message' => "Your {$this->scheduler->name} scheduler has failed.",
+            'message' => "Your {$this->scheduler->name} scheduler could not authenticate. Please make sure the authentication route is correct.",
             'link' => url(route('schedulers.index', ['site' => $this->scheduler->host->id])),
         ];
     }

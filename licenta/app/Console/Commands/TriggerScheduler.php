@@ -2,14 +2,18 @@
 
 namespace App\Console\Commands;
 
+use App\Exceptions\SchedulerAuthenticationFailedException;
 use App\Models\Scheduler;
 use App\Models\SchedulerStats;
+use App\Notifications\SchedulerCouldNotAuthenticate;
+use Carbon\Carbon;
 use Cron\CronExpression;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\TransferStats;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Http;
 
 class TriggerScheduler extends Command
 {
@@ -29,6 +33,11 @@ class TriggerScheduler extends Command
      */
     protected $description = 'It triggers an HTTP request to a specified scheduler';
     
+    protected $cookieJar;
+    protected $jwtToken;
+    protected $executed_at;
+    protected $nextRunDate;
+
     /**
      * Create a new command instance.
      *
@@ -59,20 +68,28 @@ class TriggerScheduler extends Command
             return Command::FAILURE;
         }
 
-        $this->executed_at = now();
-        $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
-        $scheduler->update(['next_run' => $this->nextRunDate]);
-
-        $this->info('Generating the url');
-
-        $url = "{$scheduler->host->url}/{$scheduler->endpoint}";
-
-        $this->info('Making the request');
-
-        $startedAt = new \DateTime();
-        $start = microtime(true);
-
+        $startedAt = $start = $end = null;
         try {
+            if($scheduler->needs_auth || $scheduler->isJWTTokenExpired())
+            {
+                $this->info('Authenticating');
+                $this->authenticate($scheduler);
+                $this->info('Authenticated JWT: ' . $this->jwtToken . "\nCookies: " . $this->cookieJar);
+            }
+
+            $this->executed_at = now();
+            $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
+            $scheduler->update(['next_run' => $this->nextRunDate]);
+
+            $this->info('Generating the url');
+
+            $url = "{$scheduler->host->url}/{$scheduler->endpoint}";
+
+            $this->info('Making the request');
+
+            $startedAt = new \DateTime();
+            $start = microtime(true);
+
 
             [$response, $statsAttributes] = $this->makeTheRequest($scheduler, $url, $startedAt, $start);
 
@@ -112,11 +129,9 @@ class TriggerScheduler extends Command
                     'duration' => floatval($end - $start)
                 ]);
 
-                $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
                 $scheduler->update(['next_run' => $this->nextRunDate]);
 
                 if ($this->isErrorStatusCode($lastStatusCode) && $scheduler->canSendNotification()) {
-                    $scheduler->update(['emailed_at' => now()]);
                     $scheduler
                         ->owner()
                         ->notify(
@@ -125,14 +140,54 @@ class TriggerScheduler extends Command
                                 $response
                             )
                         );
+                    $scheduler->update(['emailed_at' => now()]);
                 }
             }
+
+            if($e instanceof SchedulerAuthenticationFailedException){
+                $response = $e->getExceptionData();
+                $endedAt = new \DateTime();
+                $end = microtime(true);
+                SchedulerStats::create([
+                    'executed_at' => $this->executed_at,
+                    'headers' => json_encode($response->getHeaders()),
+                    'scheduler_id' => $scheduler->id,
+                    'response_body' => $response->getBody(),
+                    'status_code' => $response->getStatusCode(),
+                    'started_at' => $startedAt,
+                    'ended_at' => $endedAt,
+                    'duration' => floatval($end - $start)
+                ]);
+
+                $this->nextRunDate = (new CronExpression($scheduler->cronExpression))->getNextRunDate(now());
+                $scheduler->update(['next_run' => $this->nextRunDate]);
+
+                if ($scheduler->canSendNotification()) {
+                    $scheduler
+                        ->owner()
+                        ->notify(
+                          new SchedulerCouldNotAuthenticate($scheduler)
+                        );
+                    $scheduler->update(['emailed_at' => now()]);
+                }
+            }
+
             return Command::FAILURE;
         }
     }
 
     protected function makeTheRequest($scheduler, $url, $startedAt, $start)
     {
+
+        $headers = [
+            "Content-Type"=> "application/json",
+            'User-Agent' => 'Whoops-Scheduler'
+        ];
+
+        if(isset($this->jwtToken)){
+            $headers['Authorization'] =  "Bearer {$this->jwtToken}";
+        }
+
         $statsAttributes = [];
         $client = new Client();
         $response = $client->request($scheduler->method, $url, [
@@ -161,13 +216,52 @@ class TriggerScheduler extends Command
             'allow_redirects' => true,
             'http_errors' => true,
             'verify' => false,
+            'json' => $scheduler->payload,
+            'cookies' => $this->cookieJar ?? null,
+            'headers' => $headers,
         ]);
+
 
         return [$response, $statsAttributes];
     }
 
     protected function isErrorStatusCode($code)
     {
-        return $code >= 400 && $code < 600;
+        return $code >= 400;
     }
+
+    public function authenticate($scheduler)
+    {
+        if($scheduler->jwt_expire_date != null && !$scheduler->isJWTTokenExpired()){
+            $this->jwtToken = $scheduler->jwt;
+            return;
+        }
+
+        $response = Http::post($scheduler->host->url . '/' . $scheduler->auth_route, $scheduler->auth_payload);
+        
+        if($response->successful())
+        {
+            $body = json_decode($response->body(), TRUE);
+            
+            if(array_key_exists('jwt', $body))
+            {
+                $this->jwtToken = $body['jwt'];
+                preg_match("/\"exp\":\s?(\d+),/",base64_decode($this->jwtToken), $matches);
+                $expireDate = Carbon::createFromTimestamp($matches[1]);
+                $scheduler->update([
+                    'jwt' => $this->jwtToken,
+                    'jwt_expire_date' => $expireDate
+                ]);
+            }
+            else
+            {
+                $this->cookieJar = $response->cookies();
+            }
+
+            return;
+        }
+        
+        throw new SchedulerAuthenticationFailedException($response, 'Could not authenticate');
+    }
+
 }
