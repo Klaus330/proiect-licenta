@@ -13,6 +13,7 @@ use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\TransferStats;
 use Illuminate\Console\Command;
 use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Http;
 
 class TriggerScheduler extends Command
@@ -56,7 +57,7 @@ class TriggerScheduler extends Command
     public function handle()
     {
         // TODO: REFACTOR USING EVENTS
-        $this->info('Changing the next-run attribute');
+        // $this->info('Changing the next-run attribute');
 
         $scheduler = $this->argument('scheduler');
         $scheduler = Scheduler::find($scheduler);
@@ -69,6 +70,15 @@ class TriggerScheduler extends Command
         }
 
         $startedAt = $start = $end = null;
+
+        if($scheduler->has_remote_code)
+        {
+            $this->info("Run remote code");
+            $this->runCodeRemotely($scheduler);
+
+            return Command::SUCCESS;
+        }
+
         try {
             if($scheduler->needs_auth || $scheduler->isJWTTokenExpired())
             {
@@ -174,6 +184,15 @@ class TriggerScheduler extends Command
 
             return Command::FAILURE;
         }
+    }
+
+    protected function runCodeRemotely(Scheduler $scheduler)
+    {
+        Artisan::call("remote:run", [
+            'scheduler' => $scheduler->id,
+        ]);
+
+        $this->info('Running the code remotely');
     }
 
     protected function makeTheRequest($scheduler, $url, $startedAt, $start)
