@@ -5,7 +5,7 @@
         <div class="-my-1 overflow-x-auto sm:-mx-6 lg:-mx-8">
             <div class="py-1 align-middle inline-block min-w-full sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-gray-50 p-3 rounded">
-                    <table class="w-full table-auto">
+                    <table class="w-full table-auto border-separate border-spacing-x-4">
                         <thead>
                             <th class="text-left">Date</th>
                             <th class="text-left">Code</th>

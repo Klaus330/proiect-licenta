@@ -38,17 +38,19 @@
                         </div>
                     </div>
                     <div x-show="show" class="py-4 px-2 rounded" style="display: none;">
-                        <p>Headers:</p>
-                        <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
-                            @forelse($statistics->headers as $headerName => $header)
-                                <p class="whitespace-nowrap">
-                                    <b>{{$headerName}}:</b>
-                                    {{ $header[0] }}
-                                </p>
-                            @empty
-                                <p>No headers present</p>
-                            @endforelse
-                        </div>
+                        @if(!empty($headers))
+                            <p>Headers:</p>
+                            <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
+                                @forelse($statistics->headers as $headerName => $header)
+                                    <p class="whitespace-nowrap">
+                                        <b>{{$headerName}}:</b>
+                                        {{ $header[0] }}
+                                    </p>
+                                @empty
+                                    <p>No headers present</p>
+                                @endforelse
+                            </div>
+                        @endif
                         <p>Body:</p>
                         <div class="overflow-auto bg-white text-black max-h-80  response-preview">
                             {{ $statistics->response_body }}

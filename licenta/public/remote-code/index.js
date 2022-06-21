@@ -8,11 +8,11 @@ if(path != undefined && !path.startsWith('--path')){
 }
 
 path = path.replace('--path=', '');
-console.log(path)
+// console.log(path)
 
 const hostileCode = fs.readFileSync(path, 'utf8')
 
-console.log(hostileCode)
+// console.log(hostileCode)
 
 const ivm = require('isolated-vm');
 const isolate = new ivm.Isolate({ memoryLimit: 128 });
