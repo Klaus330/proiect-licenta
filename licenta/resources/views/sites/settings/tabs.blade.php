@@ -1,12 +1,6 @@
-<div>
-    {{-- <tab-selector :tabs="{{json_encode([
-         'General' => route("settings.general", ['site' => $site->id]),
-         'Uptime' => route("settings.uptime", ['site' => $site->id]),
-         'Certificate Health' => route("settings.ssl", ['site' => $site->id]),
-         'Broken Links' => route("settings.links", ['site' => $site->id]),
-         'Remove' => route("sites.remove", ['site' => $site->id])
-     ])}}"></tab-selector> --}}
-     <div class="hidden sm:block">
+<div class="overflow-x-auto">
+
+     <div class=" sm:block">
          <div class="border-b border-gray-200">
              <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                  <!-- Current: "border-indigo-500 text-indigo-600", Default: "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300" -->
