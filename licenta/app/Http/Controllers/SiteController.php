@@ -20,27 +20,12 @@ class SiteController extends Controller
         $lastIncidents = $site->last_incidents;
         return view("sites.show", compact("site", "lastIncidents"));
     }
-    
-    public function store()
-    {
-        
-    }
-    
-    public function edit()
-    {
-        
-    }
-
-    public function update()
-    {
-        
-    }
 
     public function overview(Site $site)
     {
         $latestStats = $site->getLastMonthMonitoringInfo();
         $lastIncident = $site->last_incident;
-        
+
         return view('sites.overview', compact('site', 'latestStats', 'lastIncident'));
     }
 

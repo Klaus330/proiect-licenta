@@ -3,12 +3,14 @@
 @section('basic_head')
     <link href="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.css" rel="stylesheet" type="text/css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsoneditor/9.7.4/jsoneditor.min.js"></script>
+    {{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.3/basic.css" integrity="sha512-+Vla3mZvC+lQdBu1SKhXLCbzoNCl0hQ8GtCK8+4gOJS/PN9TTn0AO6SxlpX8p+5Zoumf1vXFyMlhpQtVD5+eSw==" crossorigin="anonymous" referrerpolicy="no-referrer" /> --}}
 @endsection
 
 @section('dashboard-content')
-    <form class="p-5 bg-white rounded" 
-          x-data="settingsForm()" @submit.prevent="saveSettings"
-          action="{{route('schedulers.settings.save', ['site' => $site->id, 'scheduler' => $scheduler->id])}}" method="POST">
+    <form class="p-5 bg-white rounded my-5 " 
+          x-data="settingsForm()" @submit.prevent="saveSettings()"
+          x-init="$watch('needsAuth', (value) => {if(needsAuth){runsRemoteCode = false;} needsAuth = value;}); $watch('runsRemoteCode', (value) => {if(runsRemoteCode){needsAuth = false;} runsRemoteCode = value;});"
+          action="{{route('schedulers.settings.save', ['site' => $site->id, 'scheduler' => $scheduler->id])}}" method="POST"  enctype="multipart/form-data">
         @csrf
         <h2 class="font-semibold text-2xl">Scheduler "{{ $scheduler->name }}" settings</h2>
         
@@ -88,23 +90,80 @@
             </div>
         </div>
 
-        <div class="mt-4 border-t border-gray-300 py-3">
-            <div class="mb-4">
-                <h2 class="font-semibold text-xl">Scheduler Payload</h2>
-                <p class="text-gray-400 text-sm">This payload will be send in the request body.</p>
+        <div class="mt-10 border-t border-gray-300 py-3 px-3">
+            <div class="flex items-start">
+                <div class="flex items-center h-5">
+                    <input id="has_remote_code" name="has_remote_code" type="checkbox" x-model="runsRemoteCode"
+                        class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" {{$scheduler->has_remote_code ? 'checked' : ''}}>
+                </div>
+                <div class="ml-3 text-sm">
+                    <label for="has_remote_code" class="font-medium text-gray-700">Has Remote Code Execution</label>
+                    <p class="text-gray-500">The scheduler will execute the code you provide</p>
+                </div>
             </div>
-            <div id="jsoneditor" class="w-full" style="height: 400px;"></div>
-        </div>
 
-        <div class="mt-10 flex justify-end items-center">
-            <button class="text-white bg-indigo-600 hover:bg-indigo-700 rounded px-4 py-2">Save changes</button>
+            <div x-show="runsRemoteCode">
+                @if($scheduler->has_remote_code)
+                    <div class="relative">
+                        <h3 class="font-semibold text-md my-2">Code preview:</h3>
+                        
+                        <div class="h-full w-full bg-white absolute top-0 left-0 flex items-center justify-center spinner">
+                            <svg role="status" class="w-8 h-8 mr-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"></path>
+                                <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"></path>
+                            </svg>
+                        </div>
+                        <div id="codepreview" style="max-height: 800px; overflow-y:auto;" class="my-4">
+                        </div>
+                    </div>
+                @endif
+                <div class="flex justify-start flex-col">
+                    <label for="file">Upload a script:</label>
+                    <input type="file" name="file"/>
+                </div>
+            </div>
+            
+            <div class="mt-4 border-t border-gray-300 py-3">
+                <div class="mb-4">
+                    <h2 class="font-semibold text-xl">Scheduler Payload</h2>
+                    <p class="text-gray-400 text-sm">This payload will be send in the request body.</p>
+                </div>
+    
+                <div id="jsoneditor" class="w-full" style="height: 400px;"></div>
+            </div>
+            
+            <div class="mt-10 flex justify-end items-center bg-white">
+                <button type="submit" class="text-white bg-indigo-600 hover:bg-indigo-700 rounded px-4 py-2">Save changes</button>
+            </div>
         </div>
     </form>
 @endsection
 
 
 @section('dashboard-script')
+    <script src="https://unpkg.com/shiki"></script>
     <script>
+        function highlightCode(code){
+            document.querySelector('#codepreview pre')?.remove()
+            document.querySelector('.spinner').style.display = 'flex'
+            console.log('hit')
+            shiki.getHighlighter({
+                theme: 'nord'
+            })
+            .then(highlighter => {
+                let highlightedCode = highlighter.codeToHtml(code, { lang: "javascript" })
+                document.querySelector('#codepreview').innerHTML = highlightedCode
+                document.querySelector('#codepreview pre').classList.add('p-3')
+                document.querySelector('.spinner').style.display = 'none'
+            }).catch(err => {
+                console.error('here', err)
+            })
+        }
+
+        @if($scheduler->has_remote_code)
+            highlightCode(`{!!file_get_contents($scheduler->remote_code_path_with_filename)!!}`);
+        @endif
+        
         const container = document.getElementById("jsoneditor")
         const editor = new JSONEditor(container, {})
         editor.set(@json($scheduler->payload))
@@ -114,6 +173,7 @@
             return {
                 authRoute: @json($scheduler->auth_route),
                 needsAuth: @json($scheduler->needs_auth),
+                runsRemoteCode: @json($scheduler->has_remote_code),
                 authKeys: [],
                 authValues: [],
                 saveSettings(event) {
@@ -129,18 +189,32 @@
                     })  
 
                     const updatedJson = editor.get()
+                    
+                        let formData = new FormData();
+                        let file = document.querySelector('input[type="file"]').files[0];
+                        formData.append('file', file);
+                        formData.append('scheduler', '{{ $scheduler->id }}');
+                        formData.append('payload', updatedJson);
+                        formData.append('authKeys[]', authKeys);
+                        formData.append('authValues[]', authValues);
+                        formData.append('needsAuth', this.needsAuth);
+                        formData.append('hasRemoteCode', this.runsRemoteCode);
+                        formData.append('authRoute', this.authRoute);
 
-                    axios.post('{{ route('schedulers.settings.save', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}',{
-                        'auth_route': this.authRoute,
-                        'authKeys': authKeys,
-                        'authValues': authValues,
-                        'needs_auth': this.needsAuth,
-                        'payload': updatedJson
-                    }).then((response) => {
-                        toastr.success("Settings saved.")
-                    }).catch((response) => {
-                        toastr.error("Error saving settings.")
-                    })
+                        axios.post(
+                            '{{ route('schedulers.settings.save', ['site' => $site->id, 'scheduler' => $scheduler->id]) }}',
+                            formData
+                        ).then((response) => {
+                            toastr.success("Settings saved.")
+                            console.log(response)
+                            if(response.data['code'] != undefined)
+                            {
+                                highlightCode(response.data['code']);
+                            }
+                        }).catch((response) => {
+                            console.log(response)
+                            toastr.error("Error saving settings.")
+                        })
                 },
                 template:` <div class="flex gap-2 w-full items-end">
                             <div>

@@ -38,6 +38,9 @@ class AddNewSiteForm extends Component
             // Check the ssl certificate
             Artisan::queue("ssl:check", ["site" => $site->id]);
 
+            // Check the ssl certificate
+            Artisan::queue("lighthouse", ["site" => $site])->onQueue('lighthouse');
+
             // Dispatch Crawler Job
             dispatch(new \App\Jobs\CrawlSite($site))->onQueue('crawlers');
 

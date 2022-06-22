@@ -38,24 +38,23 @@
                         </div>
                     </div>
                     <div x-show="show" class="py-4 px-2 rounded" style="display: none;">
-                        <p>Headers:</p>
-                        <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
-                            @forelse($statistics->headers as $headerName => $header)
-                                <p class="whitespace-nowrap">
-                                    <b>{{$headerName}}:</b>
-                                    {{ $header[0] }}
-                                </p>
-                            @empty
-                                <p>No headers present</p>
-                            @endforelse
-                        </div>
+                        @if(!empty($headers))
+                            <p>Headers:</p>
+                            <div class="overflow-auto bg-white text-black max-h-80 p-4 mb-5">
+                                @forelse($statistics->headers as $headerName => $header)
+                                    <p class="whitespace-nowrap">
+                                        <b>{{$headerName}}:</b>
+                                        {{ $header[0] }}
+                                    </p>
+                                @empty
+                                    <p>No headers present</p>
+                                @endforelse
+                            </div>
+                        @endif
                         <p>Body:</p>
-                        <div class="overflow-auto bg-white text-black max-h-80 p-4">
-                            <pre>
-                                <code  class="json">
-                                    {{ $statistics->response_body }}
-                                </code>
-                            </pre>
+                        <div class="overflow-auto bg-white text-black max-h-80  response-preview">
+                            {{ $statistics->response_body }}
+
                         </div>
                     </div>
                 </div>
@@ -80,5 +79,22 @@
                 el.innerHTML = html.value;
             });
         });
+    </script>
+    <script src="https://unpkg.com/shiki"></script>
+    <script>
+        window.shiki.getHighlighter({
+                theme: 'nord'
+            })
+            .then(highlighter => {
+                const previewElements = document.querySelectorAll('.response-preview', {language: 'json'})
+                previewElements.forEach(el => {
+                    let highlightedCode = highlighter.codeToHtml(el.innerText)
+                    el.innerText = ''
+                    el.innerHTML = highlightedCode
+                    el.querySelector('pre').classList.add('p-4')
+                })
+            }).catch(err => {
+                console.error(err)
+            })
     </script>
 @endsection

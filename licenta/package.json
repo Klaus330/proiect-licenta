@@ -24,7 +24,10 @@
         "chart.js": "^3.7.1",
         "font-awesome": "^4.7.0",
         "highlight.js": "^11.5.1",
+        "isolated-vm": "^4.4.1",
         "jsoneditor": "^9.7.4",
-        "lighthouse": "^9.5.0"
+        "lighthouse": "^9.5.0",
+        "node-gyp": "^9.0.0",
+        "shiki": "^0.10.1"
     }
 }

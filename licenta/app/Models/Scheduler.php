@@ -37,6 +37,7 @@ class Scheduler extends Model
       'auth_route',
       'jwt',
       'jwt_expire_date',
+      'has_remote_code',
     ];
 
     public $casts = [
@@ -59,7 +60,7 @@ class Scheduler extends Model
   
     public function owner()
     {
-      return $this->host->owner;
+      return $this->host->owner();
     }
   
     public function isActive()
@@ -135,5 +136,35 @@ class Scheduler extends Model
       }
 
       return $this->jwt_expire_date < now();
+    }
+
+    public function remote_code_file()
+    {
+      return $this->hasOne(RemoteCode::class, 'scheduler_id');
+    }
+
+    public function getRemoteCodePathWithFileNameAttribute()
+    {
+      return $this->remote_code_path . $this->remote_code_file->filename;
+    }
+
+    public function getRemoteCodePathAttribute()
+    {
+      return base_path() . $this->remote_code_path_without_base_path;
+    }
+
+    public function getRemoteCodePathWithoutBasePathAttribute()
+    {
+      return '/public/remote-code/users/' . $this->owner->id . '/' . $this->id . '/';
+    }
+    
+    public function getRemoteCodeOutputPathAttribute()
+    {
+      return base_path() . $this->remote_code_path . 'output.txt';
+    }
+
+    public function getHasRemoteCodeAttribute($value)
+    {
+      return $this->remote_code_file != null && $value;
     }
 }

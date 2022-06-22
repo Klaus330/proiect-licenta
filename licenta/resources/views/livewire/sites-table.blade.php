@@ -29,7 +29,7 @@
                     
                     @foreach($sites as $site)
                         <!-- Odd row -->
-                        <tr class="bg-white" wire:key="{{ $site->id }}">
+                        <tr class="bg-white" wire:key="site-{{ $site->id }}">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-indigo-400">
                                 <a href="{{ route('sites.show', ['site' => $site->id]) }}">{{$site->name ?? $site->url}}</a>
                             </td>
@@ -40,7 +40,7 @@
                                             'status' => $site->getStatus()->label(),
                                             'success' => ['message' => 'Up'],
                                             'error' => ['message' => 'Down']
-                                        ])
+                                        ], key($site->id))
                                     </a>
                                 </div>
                             </td>
@@ -52,7 +52,7 @@
                                             'success' => ['message' => 'Valid'],
                                             'error' => ['message' => 'Expired'],
                                             'info' => ['message' => 'About expire']
-                                        ])
+                                        ], key($site->id))
                                     </a>
                                 </div>
                             </td>
@@ -63,7 +63,7 @@
                                             'status' => $site->hasSchedulers()->label(),
                                             'success' => ['message' => 'Monitoring'],
                                             'error' => ['message' => 'Not Registered']
-                                        ])
+                                        ], key($site->id))
                                     </a>
                                 </div>
                             </td>
@@ -73,7 +73,7 @@
                                         'status' => $site->brokenLinksStatus()->label(),
                                         'success' => ['message' => 'Not found'],
                                         'error' => ['message' => 'Found']
-                                    ])
+                                    ], key($site->id))
                                 </a>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">

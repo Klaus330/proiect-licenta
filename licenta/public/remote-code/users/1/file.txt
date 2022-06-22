@@ -1,0 +1,4 @@
+log('WORKS')
+
+get('https://cat-fact.herokuapp.com/facts').then((res) => log(res))
+log('wooow')

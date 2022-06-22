@@ -7,6 +7,7 @@ use App\Models\SchedulerStats;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
 use App\Models\Site;
+use App\Repositories\RemoteCodeRepository;
 
 class SchedulerController extends Controller
 {
@@ -51,39 +52,57 @@ class SchedulerController extends Controller
         return view("scheduler.settings.index", compact(["site", "scheduler"]));
     }
 
-    public function saveSettings(Site $site, Scheduler $scheduler, Request $request)
+    public function saveSettings(Site $site, Scheduler $scheduler, Request $request, RemoteCodeRepository $remoteCodeRepo)
     {
         $validated = $request->validate([
-            'auth_route' => [
-                'required_if:needs_auth,true',
-                'nullable',],
-            'authKeys' => [
-                'required_if:needs_auth,true',
-                'array',],
-            'authValues' => [
-                'required_if:needs_auth,true',
-                'array',],
+            'authRoute' => ['required_if:needsAuth,true', 'nullable',],
+            'authKeys' => [ 'required_if:needsAuth,true', 'array',],
+            'authValues' => [ 'required_if:needsAuth,true', 'array',],
+            'file' => [ 'required_if:has_remote_code,true',],
         ]);
-
+        
         $payload = [];
 
-        $needsAuth = isset($request->needs_auth) ? true : false;
+        $hasRemoteCode = isset($request->hasRemoteCode) ? true : false;
+        $needsAuth = isset($request->needsAuth) ? true : false;
+        
+        if($hasRemoteCode && array_key_exists('file', $validated)) {
+         $payload['needs_auth'] = false;
+         $needsAuth = false;
+         $remoteCodeRepo->saveRemoteCodeForScheduler($scheduler, $validated['file']);
+        }
+
         if($needsAuth)
         {
             $authKeys = $validated['authKeys'];
             $authValues = $validated['authValues'];
             $authPayload = array_combine($authKeys, $authValues);
 
-            $payload['auth_route'] = trim($validated['auth_route'], '/');
+            $payload['auth_route'] = trim($validated['authRoute'], '/');
             $payload['needs_auth'] = true;
             $payload['auth_payload'] = $authPayload;
+            $payload['has_remote_code'] = false;
         }
-        
+
         $payload['payload'] = $request->get('payload');
 
         $scheduler->update($payload);
 
         session()->flash("success", "Scheduler settings updated successfully");
+
+        if($request->expectsJson())
+        {
+            $response = [
+                'message' => 'Your settings have been updated successfully',
+            ];
+
+            if ($hasRemoteCode) {
+                $response['code'] = file_get_contents($scheduler->remote_code_path_with_filename);
+            }
+
+            return response()->json($response, 200);
+        }
+
         return redirect()->route("schedulers.settings", ["site" => $site->id, "scheduler" => $scheduler->id]);
     }
 }
